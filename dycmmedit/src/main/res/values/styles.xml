@@ -1,0 +1,64 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="BaseAppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+    <!-- StatusBar为透明色 -->
+    <style name="ColorTranslucentTheme" parent="@style/BaseAppTheme" />
+
+    <!-- 主界面 设置Style -->
+    <style name="MainActivityColorTranslucentTheme" parent="@style/BaseAppTheme" >
+        <item name="colorPrimary">#fff</item>
+        <item name="colorPrimaryDark">#fff</item>
+        <item name="colorAccent">#fff</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="PopupOverlayRedact" parent="ThemeOverlay.AppCompat.Light" >
+    </style>
+    <style name="WhiteToolBarStyle" parent="ThemeOverlay.AppCompat.Light" >
+        <item name="android:textColorPrimary">@android:color/black</item>
+        <!-- 溢出菜单图标颜色-->
+        <item name="colorControlNormal">@android:color/black</item>
+        <!-- 左边箭头 -->
+        <item name="color">@android:color/black</item>
+        <item name="actionMenuTextColor">@android:color/black</item>
+    </style>
+    <style name="filtrateTextView">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#555555</item>
+    </style>
+    <style name="Dialog" parent="android:style/Theme.Dialog">
+        <item name="android:background">#00000000</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+    <style name="RedactActivityColorTranslucentTheme" parent="@style/BaseAppTheme" >
+        <item name="colorPrimary">#F8F8F8</item>
+        <item name="colorPrimaryDark">#8A8A8A</item>
+        <item name="colorAccent">#555555</item>
+        <item name="android:textColorPrimary">#333333</item>
+    </style>
+    <style name="cb_test">
+        <!--波纹的颜色-->
+        <item name="android:colorControlHighlight">#A9A9A9</item>
+        <!--选中的颜色-->
+        <item name="colorAccent">@color/colorDYBlue</item>
+    </style>
+</resources>

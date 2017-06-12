@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">ANDROID_SHELL4</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_search">搜索</string>
+    <string name="text_no_more_data">没有更多数据</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_save">保存</string>
+    <string name="action_submit">提交</string>
+    <string name="action_alter">修改</string>
+    <string name="action_upload_thumbnail">上传缩略图</string>
+    <string name="action_preview_thumbnail">预览缩略图</string>
+    <string name="action_preview">预览</string>
+    <string name="target_system">目标系统</string>
+    <string name="audit_opinion">审核意见</string>
+    <string name="auditor">审核人</string>
+    <string name="action_audit">审核</string>
+    <string name="action_audit_history">审核历史</string>
+    <string name="my_gaojian">我的稿件</string>
+    <string name="all_gaojian">全部稿件</string>
+    <string name="sh_gaojian">审核稿件</string>
+    <string name="about_gaojian">关于稿件</string>
+    <string name="about_fh">返回</string>
+</resources>

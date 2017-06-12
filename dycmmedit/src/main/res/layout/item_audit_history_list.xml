@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_submit_times"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorTextGray"
+        android:paddingBottom="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:textColor="#fff"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/ll_audit_history_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:text="审核人:"
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_auditor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="2"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:singleLine="true"
+                android:textColor="@color/textDark"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:text="审核级别："
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_audit_level"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:gravity="end"
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:text="审核状态："
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_audit_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:text="审核策略："
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_audit_strategy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:gravity="end"
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1"
+                android:text="审核意见:"
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_audit_idea"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="3"
+                android:gravity="start"
+                android:textColor="@color/textDark"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

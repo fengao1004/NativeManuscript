@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:fitsSystemWindows="true"
+    tools:context="com.dayang.dycmmedit.main.view.MainActivity"
+    tools:openDrawer="start">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppBarOverlay"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#fff"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/PopupOverlayRedact"
+            app:theme="@style/WhiteToolBarStyle"
+            app:titleTextColor="@color/colorText">
+
+            <TextView
+                android:id="@+id/iv_tool_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="66dp"
+                android:gravity="center"
+                android:textColor="#323232"
+                android:textSize="22sp" />
+        </android.support.v7.widget.Toolbar>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="#999999" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_wechat_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="70dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rl_wechat_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_wechat_list_background"></android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_action_action_search"
+        android:orderInCategory="100"
+        android:title="@string/action_save"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_submit"
+        android:icon="@drawable/ic_action_action_search"
+        android:orderInCategory="100"
+        android:title="@string/action_submit"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_preview"
+        android:icon="@drawable/ic_action_navigation_close"
+        android:orderInCategory="100"
+        android:title="@string/action_preview"
+        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_thumbnail"-->
+        <!--android:icon="@drawable/toolbar_icon_album"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_preview_thumbnail"-->
+        <!--app:showAsAction="always" />-->
+    <item
+        android:id="@+id/action_audit"
+        android:icon="@drawable/ic_action_navigation_close"
+        android:orderInCategory="100"
+        android:title="@string/action_audit"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_audit_history"
+        android:icon="@drawable/history"
+        android:orderInCategory="100"
+        android:title="@string/action_audit_history"
+        app:showAsAction="always" />
+</menu>

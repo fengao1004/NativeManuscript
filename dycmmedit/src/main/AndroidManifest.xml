@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dayang.dycmmedit">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.LOCATION_HARDWARE" />
+
+    <application
+        android:name=".application.MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".splash.SplashActivity" />
+        <activity
+            android:name=".main.view.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/ActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".redact.view.RedactActivity"
+            android:theme="@style/ActivityTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
+            android:name=".redact.view.WeChatListActivity"
+            android:theme="@style/ActivityTheme" />
+        <activity android:name=".about.AboutActivity" />
+        <activity
+            android:name=".setting.SettingActivity"
+            android:theme="@style/ActivityTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name=".preview.PreviewActivity"
+            android:theme="@style/ActivityTheme"></activity>
+    </application>
+
+</manifest>

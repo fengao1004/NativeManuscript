@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppBarOverlay"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_tv_redact"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#fff"
+            android:translationZ="3dp"
+            app:popupTheme="@style/PopupOverlayRedact"
+            app:theme="@style/WhiteToolBarStyle"
+            app:titleTextColor="@color/colorText">
+
+            <TextView
+                android:id="@+id/iv_tool_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="#323232"
+                android:textSize="22sp" />
+        </android.support.v7.widget.Toolbar>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="#999999" />
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_tool_set"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="#E6E6E6"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/iv_input_method"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_live_speaker_keyboard" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/iv_record"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/ic_live_speaker_micsmall" />
+
+        <ImageView
+            android:id="@+id/iv_select_file"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/compose_toolbar_picture" />
+
+        <ImageView
+            android:id="@+id/iv_emotion"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/ic_emotion_logo" />
+
+        <ImageView
+            android:id="@+id/iv_topic"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/compose_trendbutton_background" />
+
+        <ImageView
+            android:id="@+id/iv_select_file_weibo"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/compose_toolbar_picture" />
+
+        <ImageView
+            android:id="@+id/iv_camera_weibo"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/surprise_camerabutton" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_tool_set"
+        android:layout_below="@id/toolbar"
+        android:background="#fff"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="#fff"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_header"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:lines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/colorText"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/iv_alter"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/icon_black_point" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#999" />
+        </LinearLayout>
+
+
+        <com.dayang.richeditor.RichEditor
+            android:id="@+id/editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="45dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_editor_weibo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="45dp"
+            android:background="#fff"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/et_weibo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:lines="9"
+                    android:maxLength="144"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_alignBottom="@id/et_weibo"
+                android:background="#999999" />
+
+            <TextView
+                android:id="@+id/tv_weibo_text_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="end"
+                android:paddingRight="15dp" />
+
+            <RelativeLayout
+                android:id="@+id/rl_weibo_image"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:background="#AAAAAA"
+                android:translationZ="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/iv_weibo_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="center" />
+
+                <ImageView
+                    android:id="@+id/iv_close_weibo_image"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/alipay_msp_close" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_select_image"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:background="@drawable/shape_dialog_white_background_menu"
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:translationZ="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/take_photo"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center|left"
+                android:text="拍照"
+                android:textColor="@color/colorText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/take_video"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center|left"
+                android:text="摄像"
+                android:textColor="@color/colorText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/from_album"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center|left"
+                android:text="本地"
+                android:textColor="@color/colorText"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_shelter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#00000000" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_emoji"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#E6E6E6"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_emoji"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_emoji_point"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal" />
+    </LinearLayout>
+</RelativeLayout>
+

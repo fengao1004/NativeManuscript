@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ANDROID_SHELL4.iml" filepath="$PROJECT_DIR$/ANDROID_SHELL4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dycmmedit/dycmmedit.iml" filepath="$PROJECT_DIR$/dycmmedit/dycmmedit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/loginlib/loginlib.iml" filepath="$PROJECT_DIR$/loginlib/loginlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pickmediafile/pickmediafile.iml" filepath="$PROJECT_DIR$/pickmediafile/pickmediafile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/richeditor/richeditor.iml" filepath="$PROJECT_DIR$/richeditor/richeditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/uploadfile/uploadfile.iml" filepath="$PROJECT_DIR$/uploadfile/uploadfile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/uploadlib/uploadlib.iml" filepath="$PROJECT_DIR$/uploadlib/uploadlib.iml" />
+    </modules>
+  </component>
+</project>

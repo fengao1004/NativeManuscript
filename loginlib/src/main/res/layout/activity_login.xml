@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="82dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/cmtools" />
+
+        <EditText
+            android:id="@+id/edit_login_username"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/shape_login_edit_background"
+            android:drawableLeft="@drawable/ic_login_username_default"
+            android:drawablePadding="10dp"
+            android:hint="@string/username"
+            android:lines="1"
+            android:padding="10dp"
+            android:paddingLeft="8dp"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edit_login_password"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/shape_login_edit_background"
+            android:drawableLeft="@drawable/ic_login_password_default"
+            android:drawablePadding="10dp"
+            android:gravity="center_vertical"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:lines="1"
+            android:padding="10dp"
+            android:paddingLeft="8dp"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/select_login_button_background"
+            android:text="@string/login"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+</RelativeLayout>

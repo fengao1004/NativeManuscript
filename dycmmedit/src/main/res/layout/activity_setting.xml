@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppBarOverlay"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:translationZ="3dp"
+            app:popupTheme="@style/PopupOverlayRedact"
+            app:theme="@style/WhiteToolBarStyle"
+            app:titleTextColor="@color/colorText">
+            <TextView
+                android:id="@+id/iv_tool_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="66dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="稿时间测试"
+                android:textColor="#323232"
+                android:textSize="22sp" />
+        </android.support.v7.widget.Toolbar>
+
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="#999999" />
+    </android.support.design.widget.AppBarLayout>
+
+    <!--<android.support.v4.widget.NestedScrollView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="vertical">-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_setting_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp" />
+
+
+    <!--</LinearLayout>-->
+    <!--</android.support.v4.widget.NestedScrollView>-->
+</LinearLayout>
+
