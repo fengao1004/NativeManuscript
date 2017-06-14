@@ -24,10 +24,6 @@ import java.io.InputStreamReader;
  */
 public abstract class UploadFileThread extends Thread {
     private static final String TAG = "fengao";
-
-
-
-
     public UploadFileThread(Activity activity) {
 
     }

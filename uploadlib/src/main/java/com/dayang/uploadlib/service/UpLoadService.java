@@ -15,7 +15,6 @@ import com.dayang.uploadlib.model.DaoSession;
 import com.dayang.uploadlib.model.MissionInfo;
 import com.dayang.uploadlib.model.MissionInfoDao;
 import com.dayang.uploadlib.receiver.NetworkConnectChangedReceiver;
-import com.dayang.uploadlib.task.TestTask;
 import com.dayang.uploadlib.util.Constant;
 import com.dayang.uploadlib.util.NetWorkState;
 import com.dayang.uploadlib.util.SharedPreferencesUtils;
@@ -186,7 +185,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
 
     @Override
     public void deleteMission(MissionInfo info) {
-        info.pauseMission();
+        info.del();
         infoList.remove(info);
         info.setStatus(MissionInfo.REMOVED);
     }
@@ -374,7 +373,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
                 info.setStatus(MissionInfo.WAITINGNETWORDK_WIFI);
             } else {
                 info.setStatus(MissionInfo.UPLOADING);
-                threadPool.execute(new TestTask(info, this));
+                threadPool.execute(info.getTask(this));
             }
         } else {
             info.setStatus(MissionInfo.WAITINGUPLOAD);
