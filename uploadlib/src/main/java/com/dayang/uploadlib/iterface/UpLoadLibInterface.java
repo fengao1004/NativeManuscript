@@ -17,6 +17,11 @@ public interface UpLoadLibInterface {
 
     void startAllMission();
 
+    void startMission(MissionInfo info);
+
+    //提升稿件优先级
+    void promotePriority(MissionInfo info);
+
     void setMaxUploadMissionCount(int max);
 
     void deleteMission(MissionInfo info);
@@ -39,4 +44,9 @@ public interface UpLoadLibInterface {
 
     void networkStateChange(int networkState);
 
+    boolean get4gStrategy();
+
+    void set4gStrategy(boolean strategy);
+
+    void destroy();
 }

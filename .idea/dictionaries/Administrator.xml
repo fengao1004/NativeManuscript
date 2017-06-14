@@ -32,9 +32,12 @@
       <w>servicecode</w>
       <w>systemparameter</w>
       <w>textcontent</w>
+      <w>uploadcompleted</w>
+      <w>uploaderror</w>
       <w>usercode</w>
       <w>userid</w>
       <w>userinfo</w>
+      <w>waitingnetwordk</w>
       <w>waitingupload</w>
       <w>wechat</w>
       <w>weibo</w>

@@ -201,9 +201,9 @@ public class MainModel {
         return RetrofitHelper.getInstance(context).getParamInfo();
     }
 
-    public Observable<ResultLoadManuscriptInfo> lockManuscript(final Map<String, String> fields) {
+    public Observable<ResultLoadManuscriptInfo> lockManuscript(final Map<String, String> fields, final Map<String, Integer> fields2) {
         return RetrofitHelper.getInstance(context)
-                .lockManuscript(fields)
+                .lockManuscript(fields,fields2)
                 .flatMap(new Function<ResultCommonInfo, Observable<ResultLoadManuscriptInfo>>() {
                     @Override
                     public Observable<ResultLoadManuscriptInfo> apply(@NonNull ResultCommonInfo resultCommonInfo) throws Exception {
@@ -235,7 +235,7 @@ public class MainModel {
     public Observable<UserListAndTargetSystem> getSubmitMessage(final ManuscriptListInfo manuscriptListInfo) {
         Map<String, String> map = new HashMap<>();
         map.put("userId", manuscriptListInfo.usercode);
-        map.put("userName", manuscriptListInfo.username);
+        map.put("userName", PublicResource.getInstance().getUserName());
         map.put("tokenId", PublicResource.getInstance().getToken());
         map.put("columnId", manuscriptListInfo.columnid);
         map.put("privilegeIds", "PID_CMEDIT_AUDITSCRIPTS");
@@ -323,7 +323,7 @@ public class MainModel {
     public Observable<UserListAndTargetSystem> getAuditMessage(final ManuscriptListInfo manuscriptListInfo) {
         Map<String, String> map = new HashMap<>();
         map.put("userId", manuscriptListInfo.usercode);
-        map.put("userName", manuscriptListInfo.username);
+        map.put("userName", PublicResource.getInstance().getUserName());
         map.put("tokenId", PublicResource.getInstance().getToken());
         map.put("columnId", manuscriptListInfo.columnid);
         map.put("privilegeIds", "PID_CMEDIT_AUDITSCRIPTS");
@@ -423,30 +423,4 @@ public class MainModel {
         }
         return null;
     }
-
-    public Observable<ResultSaveManuscriptInfo> save(final ManuscriptListInfo manuscriptListInfo) {
-        Map<String, String> map = new HashMap<>();
-        map.put("manuscripttype", manuscriptListInfo.manuscripttype + "");
-        map.put("manuscriptid", manuscriptListInfo.manuscriptid);
-        map.put("header", manuscriptListInfo.header);
-        map.put("usercode", manuscriptListInfo.usercode);
-        map.put("username", manuscriptListInfo.username);
-        map.put("columnname", manuscriptListInfo.columnname);
-        String columnid = "";
-        for (int i = 0; i < manuscriptListInfo.columns.size(); i++) {
-            if (i != 0 && manuscriptListInfo.columnname.equals(manuscriptListInfo.columns.get(i))) {
-                columnid = manuscriptListInfo.columnsID.get(i - 1);
-                break;
-            }
-        }
-        byte[] bytes = Base64.encodeBase64(manuscriptListInfo.h5content.getBytes());
-        String h5Content = new String(bytes);
-        map.put("columnid", columnid);
-        map.put("textcontent", manuscriptListInfo.textcontent);
-        map.put("h5content", h5Content);
-        XLog.i("save: " + map.toString());
-        return saveManuscript(map);
-    }
-
-
 }

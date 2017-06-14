@@ -104,8 +104,12 @@ public class WeChatListPresenterImpl implements WeChatListPresenterInterface {
             weChatListView.makeToast("已经达到微信稿件最大数目,无法创建更多稿件");
             return;
         }
+        if (manuscriptList.size() == 0) {
+            weChatListView.makeToast("未知错误");
+            return;
+        }
         boolean hasPrivilege = PrivilegeUtil.hasPrivilege(PrivilegeUtil.PRIVILEGE_WRITE, manuscriptList.get(0));
-        if(!hasPrivilege){
+        if (!hasPrivilege) {
             weChatListView.makeToast("您没有新建稿件权限");
             return;
         }
@@ -135,8 +139,8 @@ public class WeChatListPresenterImpl implements WeChatListPresenterInterface {
         manuscriptListInfo.usercode = TextUtils.isEmpty(manuscriptListInfo.usercode) ? userCode : manuscriptListInfo.usercode;
         Map<String, String> map = new HashMap<>();
         map.put("manuscripttype", manuscriptListInfo.manuscripttype + "");
-        map.put("usercode", manuscriptListInfo.usercode);
-        map.put("username", manuscriptListInfo.username);
+        map.put("usercode", PublicResource.getInstance().getUserCode());
+        map.put("username", PublicResource.getInstance().getUserName());
         map.put("fatherid", manuscriptList.get(0).manuscriptid);
         int fathersonmark;
         if (manuscriptList.size() == 0) {
@@ -155,6 +159,7 @@ public class WeChatListPresenterImpl implements WeChatListPresenterInterface {
                     manuscriptListInfo.manuscriptid = resultSaveManuscriptInfo.getData().manuscriptid;
                     manuscriptListInfo.arrayindex = resultSaveManuscriptInfo.getData().arrayindex;
                     manuscriptListInfo.fatherid = resultSaveManuscriptInfo.getData().fatherid;
+                    manuscriptListInfo.fathersonmark = resultSaveManuscriptInfo.getData().fathersonmark;
                     manuscriptListInfo.header = resultSaveManuscriptInfo.getData().header;
                     manuscriptList.add(manuscriptListInfo);
                     weChatListAdapter.notifyItemInserted(manuscriptList.size() - 1);
@@ -179,6 +184,14 @@ public class WeChatListPresenterImpl implements WeChatListPresenterInterface {
 
     @Override
     public void deleteManuscript(final WeChatListAdapter weChatListAdapter, final ManuscriptListInfo createManuscriptInfo) {
+        if (manuscriptList.size() == 0) {
+            weChatListView.makeToast("请从主列表删除");
+            return;
+        }
+        if (createManuscriptInfo.fathersonmark == 0) {
+            weChatListView.makeToast("删除父稿件请从主列表删除");
+            return;
+        }
         Map<String, String> map = new HashMap<>();
         map.put("manuscriptIds", createManuscriptInfo.manuscriptid);
         map.put("userid", createManuscriptInfo.usercode);

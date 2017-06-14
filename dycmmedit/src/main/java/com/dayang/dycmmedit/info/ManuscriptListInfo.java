@@ -175,13 +175,12 @@ public class ManuscriptListInfo implements Serializable {
         weixinlowimage = info.weixinlowimage;
     }
 
-    public Map getMap() {
+    public Map<String, Map> getMap() {
         Map<String, String> map = new HashMap<>();
         map.put("manuscripttype", this.manuscripttype + "");
         map.put("manuscriptid", this.manuscriptid);
         map.put("header", this.header);
         map.put("usercode", this.usercode);
-        map.put("username", this.username);
         map.put("columnname", this.columnname);
         folderid = this.folderid.equals("") ? "" : folderid;
         foldername = this.folderid.equals("") ? "" : foldername;
@@ -193,19 +192,12 @@ public class ManuscriptListInfo implements Serializable {
         map.put("editor", this.editor);
         map.put("sources", this.sources);
         map.put("montager", this.montager);
-
         map.put("summary", this.summary);
         map.put("reporter", this.reporter);
         map.put("sourceurl", this.sourceurl);
         map.put("subtitle", this.subtitle);
         map.put("keywords", this.keywords);
         map.put("nickname", this.nickname);
-
-//
-//        map.put("createtime", this.createtime);
-//        map.put("lastmodifytime", this.lastmodifytime);
-//        map.put("estimatetime", this.estimatetime);
-
         map.put("fatherid", this.fatherid);
         map.put("introduction", this.introduction);
         map.put("lastmodifier", this.lastmodifier);
@@ -229,12 +221,6 @@ public class ManuscriptListInfo implements Serializable {
         map.put("h5content", h5Content);
         Map<String, Integer> map2 = new HashMap<>();
         map2.put("iscomment", this.iscomment);
-        map2.put("arrayindex", this.arrayindex);
-        map2.put("fathersonmark", this.fathersonmark);
-        map2.put("isdeleted", this.isdeleted);
-        map2.put("mnum", this.mnum);
-        map2.put("releasetype", this.releasetype);
-        map2.put("status", this.status);
         Map<String, Map> mapMap = new HashMap<>();
         mapMap.put("stringMap", map);
         mapMap.put("int", map2);

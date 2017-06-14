@@ -146,7 +146,12 @@ public class WeChatListFragment extends BaseFragment implements WeChatListView {
         ArrayList<ExchangeManuscript> exchangeManuscripts = new ArrayList<>();
         int isNO1 = -1;
         while (originalPosition != targetPosition) {
-            if ((originalPosition == 0 || targetPosition == 0) && isNO1 == -1) {
+//            if ((originalPosition == 0 || targetPosition == 0) && isNO1 == -1) {
+//                isNO1 = 0;
+//            } else {
+//                isNO1 = 1;
+//            }
+            if ((list.get(targetPosition).arrayindex == 0 || list.get(originalPosition).arrayindex == 0) && (isNO1 != 0)) {
                 isNO1 = 0;
             } else {
                 isNO1 = 1;

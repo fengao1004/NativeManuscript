@@ -66,7 +66,7 @@ public class RedactModel {
         map.put("userCode", info.usercode);
         map.put("targetSystemIds", system.getTargetSystemIds());
         map.put("tokenid", PublicResource.getInstance().getToken());
-        map.put("username", info.username);
+        map.put("username", PublicResource.getInstance().getUserName());
         map.put("censorAuditor", system.getCensorAuditor());
         map.put("censorAuditorId", system.getCensorAuditorId());
         if (info.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_CMS) {
@@ -93,7 +93,7 @@ public class RedactModel {
     public Observable<UserListAndTargetSystem> getSubmitMessage(final ManuscriptListInfo manuscriptListInfo) {
         Map<String, String> map = new HashMap<>();
         map.put("userId", manuscriptListInfo.usercode);
-        map.put("userName", manuscriptListInfo.username);
+        map.put("userName", PublicResource.getInstance().getUserName());
         map.put("tokenId", PublicResource.getInstance().getToken());
         map.put("columnId", manuscriptListInfo.columnid);
         map.put("privilegeIds", "PID_CMEDIT_AUDITSCRIPTS");
@@ -203,7 +203,7 @@ public class RedactModel {
     public Observable<UserListAndTargetSystem> getAuditMessage(final ManuscriptListInfo manuscriptListInfo) {
         Map<String, String> map = new HashMap<>();
         map.put("userId", manuscriptListInfo.usercode);
-        map.put("userName", manuscriptListInfo.username);
+        map.put("userName", PublicResource.getInstance().getUserName());
         map.put("tokenId", PublicResource.getInstance().getToken());
         map.put("columnId", manuscriptListInfo.columnid);
         map.put("privilegeIds", "PID_CMEDIT_AUDITSCRIPTS");

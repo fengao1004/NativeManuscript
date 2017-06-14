@@ -277,43 +277,10 @@ public class RedactPresenterImpl implements RedactPresenterInterface {
     @Override
     public void submitManuscript(final RequestSubmitManuscript system, final ManuscriptListInfo info) {
         redactViewInterface.showWaiting("提交稿件中");
-
-        Map<String, String> map = new HashMap<>();
-        map.put("manuscripttype", info.manuscripttype + "");
-        map.put("manuscriptid", info.manuscriptid);
-        map.put("header", info.header);
-        map.put("usercode", info.usercode);
-        map.put("username", info.username);
-        map.put("columnname", info.columnname);
-        map.put("folderid", info.folderid);
-        map.put("foldername", info.foldername);
-        map.put("hjcolumn_id", info.hjcolumn_id);
-        map.put("hjcolumn_name", info.hjcolumn_name);
-        map.put("reporter", info.reporter);
-        map.put("camerist", info.camerist);
-        map.put("editor", info.editor);
-        map.put("sources", info.sources);
-        map.put("summary", info.summary);
-        map.put("reporter", info.reporter);
-        map.put("sourceurl", info.sourceurl);
-        map.put("subtitle", info.subtitle);
-        map.put("keywords", info.keywords);
-        String columnid = "";
-        for (int i = 0; i < info.columns.size(); i++) {
-            if (i != 0 && info.columnname.equals(info.columns.get(i))) {
-                columnid = info.columnsID.get(i - 1);
-                break;
-            }
-        }
-        byte[] bytes = Base64.encodeBase64(info.h5content.getBytes());
-        String h5Content = new String(bytes);
-        map.put("columnid", columnid);
-        map.put("textcontent", info.textcontent);
-        map.put("h5content", h5Content);
-        XLog.i("save: " + map.toString());
-        Map<String, Integer> map2 = new HashMap<>();
-        map2.put("iscomment", info.iscomment);
-        redactModel.saveManuscript(map, map2).flatMap(new Function<ResultSaveManuscriptInfo, Observable<ResultCommonInfo>>() {
+        Map map = info.getMap();
+        Map<String, String> stringMap = (Map<String, String>) map.get("stringMap");
+        Map<String, Integer> integerMap = (Map<String, Integer>) map.get("int");
+        redactModel.saveManuscript(stringMap, integerMap).flatMap(new Function<ResultSaveManuscriptInfo, Observable<ResultCommonInfo>>() {
             @Override
             public Observable<ResultCommonInfo> apply(@NonNull ResultSaveManuscriptInfo resultSaveManuscriptInfo) throws Exception {
                 if (resultSaveManuscriptInfo.isStatus()) {
@@ -376,44 +343,10 @@ public class RedactPresenterImpl implements RedactPresenterInterface {
         if (!hasPrivilege) {
             redactViewInterface.showTextDialog("对不起，您没有审核权限");
         }
+        Map<String, Map> map = info.getMap();
 
-        Map<String, String> map = new HashMap<>();
-        map.put("manuscripttype", info.manuscripttype + "");
-        map.put("manuscriptid", info.manuscriptid);
-        map.put("header", info.header);
-        map.put("usercode", info.usercode);
-        map.put("username", info.username);
-        map.put("columnname", info.columnname);
-        map.put("folderid", info.folderid);
-        map.put("foldername", info.foldername);
-        map.put("hjcolumn_id", info.hjcolumn_id);
-        map.put("hjcolumn_name", info.hjcolumn_name);
-        map.put("reporter", info.reporter);
-        map.put("camerist", info.camerist);
-        map.put("editor", info.editor);
-        map.put("sources", info.sources);
-        map.put("summary", info.summary);
-        map.put("reporter", info.reporter);
-        map.put("sourceurl", info.sourceurl);
-        map.put("subtitle", info.subtitle);
-        map.put("keywords", info.keywords);
-        String columnid = "";
-        for (int i = 0; i < info.columns.size(); i++) {
-            if (i != 0 && info.columnname.equals(info.columns.get(i))) {
-                columnid = info.columnsID.get(i - 1);
-                break;
-            }
-        }
-        byte[] bytes = Base64.encodeBase64(info.h5content.getBytes());
-        String h5Content = new String(bytes);
-        map.put("columnid", columnid);
-        map.put("textcontent", info.textcontent);
-        map.put("h5content", h5Content);
-        XLog.i("save: " + map.toString());
-        Map<String, Integer> map2 = new HashMap<>();
-        map2.put("iscomment", info.iscomment);
         redactViewInterface.showWaiting("审核中");
-        redactModel.saveManuscript(map, map2)
+        redactModel.saveManuscript((Map<String, String>) map.get("stringMap"), (Map<String, Integer>) map.get("int"))
                 .flatMap(new Function<ResultSaveManuscriptInfo, Observable<ResultCommonInfo>>() {
                     @Override
                     public Observable<ResultCommonInfo> apply(@NonNull ResultSaveManuscriptInfo resultSaveManuscriptInfo) throws Exception {

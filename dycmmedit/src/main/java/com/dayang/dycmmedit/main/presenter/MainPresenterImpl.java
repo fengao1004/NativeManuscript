@@ -88,8 +88,8 @@ public class MainPresenterImpl implements MainPresenter {
                                     folderInfo.setName("暂不选择选题");
                                     list.add(folderInfo);
                                     PublicResource.getInstance().setFolderInfos(list);
-                                }else {
-                                    List<FolderInfo> list1=new ArrayList<>();
+                                } else {
+                                    List<FolderInfo> list1 = new ArrayList<>();
                                     FolderInfo folderInfo = new FolderInfo();
                                     folderInfo.setName("暂无选题");
                                     list1.add(folderInfo);
@@ -158,8 +158,8 @@ public class MainPresenterImpl implements MainPresenter {
         Map<String, String> map = new HashMap<>();
         map.put("manuscripttype", type + "");
         map.put("manuscriptid", info.manuscriptid);
-        map.put("usercode", info.usercode);
-        map.put("username", info.username);
+        map.put("usercode", PublicResource.getInstance().getUserCode());
+        map.put("username", PublicResource.getInstance().getUserName());
         mainViewInterface.showWaiting("复制稿件中");
         mainModel.copyManuscript(map)
                 .subscribeOn(Schedulers.io())
@@ -242,7 +242,7 @@ public class MainPresenterImpl implements MainPresenter {
         map.put("userCode", info.usercode);
         map.put("targetSystemIds", system.getTargetSystemIds());
         map.put("tokenid", PublicResource.getInstance().getToken());
-        map.put("username", info.username);
+        map.put("username", PublicResource.getInstance().getUserName());
         map.put("censorAuditor", system.getCensorAuditor());
         map.put("censorAuditorId", system.getCensorAuditorId());
         mainViewInterface.showWaiting("提交稿件中");
@@ -287,7 +287,7 @@ public class MainPresenterImpl implements MainPresenter {
             public Observable<UserListAndTargetSystem> apply(@NonNull ResultLoadManuscriptInfo resultLoadManuscriptInfo) throws Exception {
 
                 if (!resultLoadManuscriptInfo.isStatus()) {
-                   throw  new Exception("获取稿件详情失败");
+                    throw new Exception("获取稿件详情失败");
                 }
                 ManuscriptListInfo manuscript = resultLoadManuscriptInfo.getData().getManuscript();
                 manuscript.init(manuscript.manuscripttype);
@@ -408,8 +408,17 @@ public class MainPresenterImpl implements MainPresenter {
         Map<String, String> map = new HashMap<>();
         map.put("manuscriptid", info.manuscriptid);
         map.put("userid", info.usercode);
-        map.put("username", info.username);
-        mainModel.lockManuscript(map)
+        map.put("username", PublicResource.getInstance().getUserName());
+        map.put("manuscriptCreater", info.username);
+        Map<String, Integer> map2 = new HashMap<>();
+        map2.put("manuscriptStatus", info.status);
+        List<String> authorityList = PublicResource.getInstance().getAuthorityList();
+        String privilegeIds = "";
+        for (int i = 0; i < authorityList.size(); i++) {
+            privilegeIds = i + 1 == authorityList.size() ? privilegeIds + authorityList.get(i) : privilegeIds + authorityList.get(i) + ",";
+        }
+        map.put("privilegeIds", privilegeIds);
+        mainModel.lockManuscript(map, map2)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseObserver<ResultLoadManuscriptInfo>() {

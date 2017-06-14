@@ -1,6 +1,7 @@
 package com.dayang.uploadlib.iterface;
 
 import com.dayang.uploadlib.model.MissionInfo;
+import com.dayang.uploadlib.model.MissionInfoDao;
 
 import java.util.List;
 
@@ -34,5 +35,16 @@ public interface UpLoadServiceInterface {
 
     void isForbidMobileNetworkUpload(boolean isForbid);
 
+    void promotePriority(MissionInfo info);
+
+    void startMission(MissionInfo info);
+
+    void networkStateChange(int networkState);
+
+    MissionInfoDao getDBHelper();
+
+    void startDBMission();
+
+    void setStartAppMode(boolean isStart);
 
 }

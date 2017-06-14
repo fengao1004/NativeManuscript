@@ -1,1 +1,1 @@
-include ':dycmmedit', ':loginlib', ':pickmediafile', ':richeditor', ':uploadfile', ':uploadlib'
+include ':dycmmedit', ':loginlib', ':pickmediafile', ':richeditor', ':uploadfile', ':uploadlib', ':test'

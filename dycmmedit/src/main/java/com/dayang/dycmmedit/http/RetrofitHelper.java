@@ -145,8 +145,8 @@ public class RetrofitHelper {
         return apiService.upPosition(upManuscriptId, downManuscriptId, isNO1);
     }
 
-    public Observable<ResultCommonInfo> lockManuscript(Map<String, String> fields) {
-        return apiService.lockManuscript(fields);
+    public Observable<ResultCommonInfo> lockManuscript(Map<String, String> fields,Map<String, Integer> fields2) {
+        return apiService.lockManuscript(fields,fields2);
     }
 
     public Observable<ResultCommonInfo> unlockManuscript(Map<String, String> fields) {

@@ -114,7 +114,7 @@ public interface ApiService {
     //锁定稿件
     @FormUrlEncoded
     @POST("ManuscriptController/lockManuscript.do")
-    Observable<ResultCommonInfo> lockManuscript(@FieldMap Map<String, String> fields);
+    Observable<ResultCommonInfo> lockManuscript(@FieldMap Map<String, String> fields, @FieldMap Map<String, Integer> fields2);
 
     //解锁稿件
     @FormUrlEncoded

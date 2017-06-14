@@ -10,7 +10,6 @@ import android.net.NetworkInfo;
  */
 
 public class NetWorkState {
-    //返回值 -1：没有网络  1：WIFI网络2：wap网络3：net网络
     public static final int WIFI = 123;
     public static final int NONE = 0;
     public static final int MOBILE = 121;

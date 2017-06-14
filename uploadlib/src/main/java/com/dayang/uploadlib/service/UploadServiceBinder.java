@@ -4,6 +4,7 @@ import android.os.Binder;
 
 import com.dayang.uploadlib.iterface.UpLoadServiceInterface;
 import com.dayang.uploadlib.model.MissionInfo;
+import com.dayang.uploadlib.model.MissionInfoDao;
 
 import java.util.List;
 
@@ -77,5 +78,35 @@ public class UploadServiceBinder extends Binder implements UpLoadServiceInterfac
     @Override
     public void isForbidMobileNetworkUpload(boolean isForbid) {
         service.isForbidMobileNetworkUpload(isForbid);
+    }
+
+    @Override
+    public void promotePriority(MissionInfo info) {
+        service.promotePriority(info);
+    }
+
+    @Override
+    public void startMission(MissionInfo info) {
+        service.startMission(info);
+    }
+
+    @Override
+    public void networkStateChange(int networkState) {
+        service.networkStateChange(networkState);
+    }
+
+    @Override
+    public MissionInfoDao getDBHelper() {
+        return service.getDBHelper();
+    }
+
+    @Override
+    public void startDBMission() {
+        service.startDBMission();
+    }
+
+    @Override
+    public void setStartAppMode(boolean isStart) {
+        service.setStartAppMode(isStart);
     }
 }

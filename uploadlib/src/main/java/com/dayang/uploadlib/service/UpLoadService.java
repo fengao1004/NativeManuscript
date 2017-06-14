@@ -3,25 +3,29 @@ package com.dayang.uploadlib.service;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.dayang.uploadlib.iterface.UpLoadServiceInterface;
+import com.dayang.uploadlib.model.DaoMaster;
+import com.dayang.uploadlib.model.DaoSession;
 import com.dayang.uploadlib.model.MissionInfo;
+import com.dayang.uploadlib.model.MissionInfoDao;
 import com.dayang.uploadlib.receiver.NetworkConnectChangedReceiver;
-import com.dayang.uploadlib.task.HttpUploadTask;
+import com.dayang.uploadlib.task.TestTask;
+import com.dayang.uploadlib.util.Constant;
 import com.dayang.uploadlib.util.NetWorkState;
 import com.dayang.uploadlib.util.SharedPreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by 冯傲 on 2017/6/1.
@@ -29,38 +33,120 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 
 public class UpLoadService extends Service implements UpLoadServiceInterface {
-    String TAG = "UpLoadService";
+    String TAG = "fengao";
     List<MissionInfo> infoList;
-    //允许同时上传的最大线程数 会从sp中读取 如果读不到就是3
     ExecutorService threadPool;
     private NetworkConnectChangedReceiver mNetworkChangeListener;
+    private MissionInfoDao missionInfoDao;
+    private List<MissionInfo> dbList;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //从SP中获取最大线程数量
-        //从SP中获取是否可以在4g环境下上传
         threadPool = Executors.newFixedThreadPool(5);
-        //注册广播接收者
         IntentFilter filter = new IntentFilter();
         mNetworkChangeListener = new NetworkConnectChangedReceiver();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
         filter.addAction("android.net.wifi.STATE_CHANGE");
         registerReceiver(mNetworkChangeListener, filter);
+        infoList = new ArrayList<>();
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(this, "notes-db", null);
+        DaoMaster daoMaster = new DaoMaster(devOpenHelper.getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        missionInfoDao = daoSession.getMissionInfoDao();
+        dbList = missionInfoDao
+                .queryBuilder()
+                .where(MissionInfoDao.Properties.Status.notEq(MissionInfo.REMOVED))
+                .build()
+                .list();
+    }
+
+    private void addDBMission() {
+        int uploadTaskCount;
+        int maxThreadCount;
+        if (dbList == null || dbList.size() == 0) {
+            return;
+        }
+        infoList.addAll(dbList);
+        Boolean param = SharedPreferencesUtils.getParam(this, Constant.STARTAPPMODE, false);
+        if (param) {
+            //会遍历四边结合
+            //1 找出上传状态的任务 这种优先级最高
+            //2 找出等待上传的任务 优先级第二
+            //3 找出关闭时正在上传或者等待网路的任务 优先级第三
+            //4 找出关闭时正在等待的任务 优先级最低
+            for (MissionInfo info : infoList) {
+                if (info.getStatus() == MissionInfo.UPLOADING
+                        || info.getStatus() == MissionInfo.WAITINGNETWORDK
+                        || info.getStatus() == MissionInfo.WAITINGNETWORDK_WIFI) {
+                    startTask(info);
+                }
+            }
+            uploadTaskCount = getUploadTaskCount();
+            maxThreadCount = getMaxThreadCount();
+            while (maxThreadCount > uploadTaskCount) {
+                MissionInfo uploadTask = getUploadTask();
+                if (uploadTask == null) {
+                    break;
+                }
+                startTask(getUploadTask());
+                uploadTaskCount = getUploadTaskCount();
+            }
+            for (MissionInfo info : infoList) {
+                if (info.getStatus() == MissionInfo.CLOSEAPP_UPLOADING) {
+                    startTask(info);
+                }
+                if (info.getStatus() == MissionInfo.CLOSEAPP_WAITINGUPLOAD) {
+                    info.setStatus(MissionInfo.WAITINGUPLOAD);
+                }
+            }
+            uploadTaskCount = getUploadTaskCount();
+            while (maxThreadCount > uploadTaskCount) {
+                MissionInfo uploadTask = getUploadTask();
+                if (uploadTask == null) {
+                    break;
+                }
+                startTask(getUploadTask());
+                uploadTaskCount = getUploadTaskCount();
+            }
+        } else {
+            for (MissionInfo info : infoList) {
+                if (info.getStatus() == MissionInfo.UPLOADING
+                        || info.getStatus() == MissionInfo.WAITINGUPLOAD
+                        || info.getStatus() == MissionInfo.WAITINGNETWORDK
+                        || info.getStatus() == MissionInfo.WAITINGNETWORDK_WIFI
+                        || info.getStatus() == MissionInfo.CLOSEAPP_UPLOADING
+                        || info.getStatus() == MissionInfo.CLOSEAPP_WAITINGUPLOAD) {
+                    info.pauseMission();
+                }
+            }
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //卸载广播接收者
+        Log.i(TAG, "onDestroy: ");
+        for (MissionInfo m : infoList) {
+            int status = m.getStatus();
+            if (status == MissionInfo.UPLOADING) {
+                m.getPauseListener().pause();
+                m.setStatus(MissionInfo.CLOSEAPP_UPLOADING);
+            }
+            if (status == MissionInfo.WAITINGNETWORDK || status == MissionInfo.WAITINGNETWORDK_WIFI) {
+                m.setStatus(MissionInfo.CLOSEAPP_UPLOADING);
+            }
+            if (status == MissionInfo.WAITINGUPLOAD) {
+                m.setStatus(MissionInfo.CLOSEAPP_WAITINGUPLOAD);
+            }
+        }
         unregisterReceiver(mNetworkChangeListener);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-
         return new UploadServiceBinder(this);
     }
 
@@ -76,8 +162,19 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
     @Override
     public synchronized void startAllMission() {
         for (MissionInfo info : infoList) {
-            if (info.getStatus() == MissionInfo.PAUSEING)
-                startTask(info);
+            if (info.getStatus() == MissionInfo.PAUSEING) {
+                info.setStatus(MissionInfo.WAITINGUPLOAD);
+            }
+        }
+        int maxThreadCount = getMaxThreadCount();
+        int uploadTaskCount = getUploadTaskCount();
+        while (maxThreadCount > uploadTaskCount) {
+            MissionInfo uploadTask = getUploadTask();
+            if (uploadTask == null) {
+                break;
+            }
+            startTask(uploadTask);
+            uploadTaskCount = getUploadTaskCount();
         }
     }
 
@@ -89,22 +186,143 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
 
     @Override
     public void deleteMission(MissionInfo info) {
-
+        info.pauseMission();
+        infoList.remove(info);
+        info.setStatus(MissionInfo.REMOVED);
     }
 
     @Override
     public void deleteMission(String sessionId) {
+        MissionInfo info = getMissionInfoBySessionId(sessionId);
+        deleteMission(info);
+    }
 
+    private MissionInfo getMissionInfoBySessionId(String sessionId) {
+        for (MissionInfo info : infoList) {
+            if (info.getSessionId().equals(sessionId))
+                return info;
+        }
+        return null;
     }
 
     @Override
     public void deleteAllMission() {
-
+        for (MissionInfo info : infoList) {
+            deleteMission(info);
+        }
     }
 
     @Override
     public void deleteCompleteMission() {
+        Iterator<MissionInfo> iterator = infoList.iterator();
+        while (iterator.hasNext()) {
+            MissionInfo next = iterator.next();
+            if (next.getStatus() == MissionInfo.UPLOADCOMPLETED) {
+                next.setStatus(MissionInfo.REMOVED);
+                iterator.remove();
+            }
+        }
+    }
 
+    @Override
+    public void promotePriority(MissionInfo info) {
+        //TODO 提高任务的优先级
+    }
+
+    @Override
+    public void startMission(MissionInfo info) {
+        info.setStatus(MissionInfo.WAITINGUPLOAD);
+        startTask(info);
+    }
+
+    @Override
+    public synchronized void networkStateChange(int networkState) {
+        //只处理联网情况 不处理断网情况 因为断网后任务会自动制成等待网络中
+        Boolean forbidMobileNetworkUpload = SharedPreferencesUtils.getParam(this, Constant.STRATEGY_4G, false);
+        switch (networkState) {
+            case NetworkConnectChangedReceiver.MOBILE:
+                //获取网络策略
+                if (forbidMobileNetworkUpload) {
+                    //有等待网络的任务制成等待wifi
+                    List<MissionInfo> waitNetWorkMissions = getWaitNetWorkMissions();
+                    for (MissionInfo missionInfo : waitNetWorkMissions) {
+                        missionInfo.setStatus(MissionInfo.WAITINGNETWORDK_WIFI);
+                    }
+                    for (MissionInfo missionInfo : infoList) {
+                        if (missionInfo.getStatus() == MissionInfo.UPLOADING) {
+                            missionInfo.getPauseListener().pause();
+                            missionInfo.setStatus(MissionInfo.WAITINGNETWORDK_WIFI);
+                        }
+                    }
+                    return;
+                } else {
+                    //开始等待网络任务
+                    List<MissionInfo> waitNetWorkMissions = getWaitNetWorkMissions();
+                    for (MissionInfo missionInfo : waitNetWorkMissions) {
+                        startTask(missionInfo);
+                    }
+                    List<MissionInfo> waitWifiMissions = getWaitWifiMissions();
+                    for (MissionInfo missionInfo : waitWifiMissions) {
+                        startTask(missionInfo);
+                    }
+                    int maxThreadCount = getMaxThreadCount();
+                    int uploadTaskCount = getUploadTaskCount();
+                    while (maxThreadCount > uploadTaskCount) {
+                        MissionInfo uploadTask = getUploadTask();
+                        if (uploadTask == null) {
+                            break;
+                        }
+                        startTask(uploadTask);
+                        uploadTaskCount = getUploadTaskCount();
+                    }
+                }
+                break;
+            case NetworkConnectChangedReceiver.NONE:
+                //检查是否还正在上传任务
+                //考虑在此做操作是否会和断网任务失败造成冲突
+                break;
+            case NetworkConnectChangedReceiver.WIFI:
+                //开始等待网络任务
+                List<MissionInfo> waitNetWorkMissions = getWaitNetWorkMissions();
+                for (MissionInfo missionInfo : waitNetWorkMissions) {
+                    startTask(missionInfo);
+                }
+                List<MissionInfo> waitWifiMissions = getWaitWifiMissions();
+                for (MissionInfo missionInfo : waitWifiMissions) {
+                    startTask(missionInfo);
+                }
+                int maxThreadCount = getMaxThreadCount();
+                int uploadTaskCount = getUploadTaskCount();
+                while (maxThreadCount > uploadTaskCount) {
+                    MissionInfo uploadTask = getUploadTask();
+                    if (uploadTask == null) {
+                        break;
+                    }
+                    startTask(uploadTask);
+                    uploadTaskCount = getUploadTaskCount();
+                }
+                break;
+        }
+    }
+
+    private List<MissionInfo> getWaitNetWorkMissions() {
+        List<MissionInfo> list = new ArrayList<>();
+        for (MissionInfo info : infoList) {
+            if (info.getStatus() == MissionInfo.WAITINGNETWORDK) {
+                list.add(info);
+            }
+        }
+        return list;
+    }
+
+    private List<MissionInfo> getWaitWifiMissions() {
+        List<MissionInfo> list = new ArrayList<>();
+        for (MissionInfo info : infoList) {
+            if (info.getStatus() == MissionInfo.WAITINGNETWORDK_WIFI) {
+                list.add(info);
+            }
+        }
+        return list;
     }
 
     @Override
@@ -115,6 +333,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
         int min = getMinimumPriority();
         info.setPriority(min - 1);
         infoList.add(info);
+        missionInfoDao.insert(info);
         startTask(info);
     }
 
@@ -139,12 +358,15 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
      * @return void
      */
     private synchronized void startTask(MissionInfo info) {
+        if (info == null) {
+            return;
+        }
         int uploadTaskCount = getUploadTaskCount();
-        Integer maxThreadCount = SharedPreferencesUtils.getParam(this, "maxThreadCount", 3);
-        if (uploadTaskCount < maxThreadCount) {
+        Integer maxThreadCount = getMaxThreadCount();
+        if (uploadTaskCount < maxThreadCount || (info.getStatus() == MissionInfo.UPLOADING) || (info.getStatus() == MissionInfo.WAITINGNETWORDK) || (info.getStatus() == MissionInfo.WAITINGNETWORDK_WIFI)) {
             //获取4g wifi策略
             //true 禁止4g上传 false允许4g上传
-            Boolean forbidMobileNetworkUpload = SharedPreferencesUtils.getParam(this, "forbidMobileNetworkUpload", false);
+            Boolean forbidMobileNetworkUpload = SharedPreferencesUtils.getParam(this, Constant.STRATEGY_4G, false);
             int netType = NetWorkState.GetNetype(this);
             if (netType == NetWorkState.NONE) {
                 info.setStatus(MissionInfo.WAITINGNETWORDK);
@@ -152,13 +374,16 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
                 info.setStatus(MissionInfo.WAITINGNETWORDK_WIFI);
             } else {
                 info.setStatus(MissionInfo.UPLOADING);
-                threadPool.execute(new HttpUploadTask(info, this));
+                threadPool.execute(new TestTask(info, this));
             }
         } else {
             info.setStatus(MissionInfo.WAITINGUPLOAD);
         }
     }
 
+    public int getMaxThreadCount() {
+        return SharedPreferencesUtils.getParam(this, "maxThreadCount", 3);
+    }
 
     /**
      * 上传任务完成之后被调用，判断list里边是否还有等待上传的任务，如果有挑取优先级最高的任务进行上传，判读的时候需要保证线程安全
@@ -175,17 +400,17 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
     }
 
     /**
-     * 获取下一个上传对象
+     * 获取下一个任务对象
      *
-     * @param parameter
+     * @param
      * @return
      */
-    private MissionInfo getUploadTask() {
+    private synchronized MissionInfo getUploadTask() {
         if (infoList.size() == 0)
             return null;
         int index = -1;
         int maxPriority = -1;
-        for (int i = 1; i < infoList.size(); i++) {
+        for (int i = 0; i < infoList.size(); i++) {
             if (infoList.get(i).getStatus() == MissionInfo.WAITINGUPLOAD) {
                 if (maxPriority == -1) {
                     maxPriority = infoList.get(i).getPriority();
@@ -202,10 +427,9 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
             return null;
         else
             return infoList.get(index);
-
     }
 
-    private int getMinimumPriority() {
+    private synchronized int getMinimumPriority() {
         if (infoList.size() == 0)
             return 1000000;
         int min = infoList.get(0).getPriority();
@@ -216,7 +440,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
     }
 
     @Override
-    public void addMissions(List<MissionInfo> infoList) {
+    public synchronized void addMissions(List<MissionInfo> infoList) {
         for (MissionInfo info : infoList) {
             addMission(info);
         }
@@ -237,7 +461,52 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
     }
 
     @Override
-    public void isForbidMobileNetworkUpload(boolean isForbid) {
-        SharedPreferencesUtils.setParam(this, "forbidMobileNetworkUpload", false);
+    public synchronized void isForbidMobileNetworkUpload(boolean isForbid) {
+        SharedPreferencesUtils.setParam(this, Constant.STRATEGY_4G, isForbid);
+        Log.i(TAG, "isForbidMobileNetworkUpload: " + SharedPreferencesUtils.getParam(this, Constant.STRATEGY_4G, isForbid));
+        int netType = NetWorkState.GetNetype(this);
+        //获取网络状态
+        //如果是4g则暂停上传并设置为等待wifi
+        if (isForbid) {
+            if (netType == NetWorkState.MOBILE) {
+                for (MissionInfo missionInfo : infoList) {
+                    if (missionInfo.getStatus() == MissionInfo.UPLOADING) {
+                        missionInfo.getPauseListener().pause();
+                        missionInfo.setStatus(MissionInfo.WAITINGNETWORDK_WIFI);
+                    }
+                }
+            }
+        } else {
+            if (netType != NetWorkState.NONE) {
+                for (MissionInfo missionInfo : infoList) {
+                    if (missionInfo.getStatus() == MissionInfo.WAITINGNETWORDK_WIFI || missionInfo.getStatus() == MissionInfo.WAITINGNETWORDK) {
+                        startTask(missionInfo);
+                    }
+                }
+            }
+        }
     }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "onUnbind: ");
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public MissionInfoDao getDBHelper() {
+        return missionInfoDao;
+    }
+
+    @Override
+    public void startDBMission() {
+        addDBMission();
+    }
+
+    @Override
+    public void setStartAppMode(boolean isStart) {
+        SharedPreferencesUtils.getParam(this, Constant.STARTAPPMODE, isStart);
+    }
+
+
 }
