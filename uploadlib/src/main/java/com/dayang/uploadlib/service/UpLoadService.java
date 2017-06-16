@@ -509,5 +509,10 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
         SharedPreferencesUtils.setParam(this, Constant.STARTAPPMODE, isStart);
     }
 
+    @Override
+    public int getThreadCount() {
+        return SharedPreferencesUtils.getParam(this, "maxThreadCount", 3);
+    }
+
 
 }

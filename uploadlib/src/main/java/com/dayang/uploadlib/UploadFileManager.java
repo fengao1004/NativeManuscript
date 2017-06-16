@@ -146,6 +146,10 @@ public class UploadFileManager implements UpLoadLibInterface {
         return SharedPreferencesUtils.getParam(context, Constant.STRATEGY_4G, false);
     }
 
+    public int getThreadCount() {
+        return binder.getThreadCount();
+    }
+
     public MissionInfoDao getDBHelper() {
         return binder.getDBHelper();
     }

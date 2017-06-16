@@ -193,13 +193,12 @@ public class MissionInfo {
             Message mes = new Message();
             mes.what = UPDATESTATUS;
             mes.obj = new int[]{status, this.progress};
-            handler.sendEmptyMessage(UPDATESTATUS);
+            handler.sendMessage(mes);
         }
     }
 
     public void setPauseListener(PauseListener pauseListener) {
         this.pauseListener = pauseListener;
-
     }
 
     public void setDelListener(DelListener delListener) {

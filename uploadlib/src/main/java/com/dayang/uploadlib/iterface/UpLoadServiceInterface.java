@@ -47,4 +47,5 @@ public interface UpLoadServiceInterface {
 
     void setStartAppMode(boolean isStart);
 
+    int getThreadCount();
 }

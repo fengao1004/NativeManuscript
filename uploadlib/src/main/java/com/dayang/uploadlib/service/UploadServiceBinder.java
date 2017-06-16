@@ -109,4 +109,9 @@ public class UploadServiceBinder extends Binder implements UpLoadServiceInterfac
     public void setStartAppMode(boolean isStart) {
         service.setStartAppMode(isStart);
     }
+
+    @Override
+    public int getThreadCount() {
+        return service.getThreadCount();
+    }
 }
