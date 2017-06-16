@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,10 +31,9 @@ import com.dayang.dycmmedit.utils.PermissionUtil;
 import com.dayang.dycmmedit.utils.PublicResource;
 import com.dayang.dycmmedit.utils.StatusBarUtil;
 import com.dayang.pickmediafile.common.PickFileManager;
-import com.dayang.uploadfile.upload.Constants;
-import com.dayang.uploadfile.upload.FtpUpload;
-import com.dayang.uploadfile.upload.HttpUpload;
-import com.dayang.uploadfile.upload.UploadFileThread;
+import com.dayang.uploadlib.UploadFileManager;
+import com.dayang.uploadlib.model.MissionInfo;
+import com.dayang.uploadlib.task.FtpUploadTask;
 import com.elvishew.xlog.XLog;
 
 import java.io.File;
@@ -316,42 +313,35 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
     public void uploadFile(final String path, String taskId) {
         showWaiting("文件上传中");
-        Handler handler = new Handler() {
+        String storageURL = PublicResource.getInstance().getStorageURL();
+        String fileStatusNotifyURL = PublicResource.getInstance().getFileStatusNotifyURL();
+        MissionInfo missionInfo = new MissionInfo();
+        missionInfo.setCompleteListener(new MissionInfo.CompleteListener() {
             @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
+            public void UploadComplete(int code) {
+                Log.i(FtpUploadTask.TAG, "adasdadasd: UploadComplete");
                 removeWaiting();
-                switch (msg.what) {
-                    case Constants.UPLOADSUCCESS:
+                switch (code) {
+                    case MissionInfo.UPLOADCOMPLETED:
                         upLoadFileComplete(path);
                         Toast.makeText(SettingActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
                         break;
-                    case Constants.UPLOADFAILTURE:
+                    case MissionInfo.UPLOADERROR:
                         Toast.makeText(SettingActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
-        };
-        UploadFileThread uploadFileThread;
-        String storageURL = PublicResource.getInstance().getStorageURL();
-        String fileStatusNotifyURL = PublicResource.getInstance().getFileStatusNotifyURL();
-        if (storageURL.startsWith("http")) {
-            uploadFileThread = new HttpUpload(storageURL,
-                    fileStatusNotifyURL, path, handler,
-                    taskId);
-            uploadFileThread.start();
-        } else if (storageURL.startsWith("ftp")) {
-            Log.i(TAG, "uploadFiles: " + fileStatusNotifyURL);
-            uploadFileThread = new FtpUpload(storageURL, path,
-                    fileStatusNotifyURL, handler,
-                    taskId);
-            uploadFileThread.start();
-        }
+        });
+        missionInfo.setFilePath(path);
+        missionInfo.setSessionId(taskId);
+        missionInfo.setFileStatusNotifyURL(fileStatusNotifyURL);
+        missionInfo.setTaskId(taskId);
+        missionInfo.setStorageURL(storageURL);
+        UploadFileManager.getInstance().addMission(missionInfo);
+
     }
 
     public void upLoadFileComplete(String path) {
-        String streamPath = PublicResource.getInstance().getStreamPath();
-        streamPath = streamPath.endsWith("/") ? streamPath : streamPath + "/";
         File file = new File(path);
         String name = file.getName();
         if (ManuscriptListInfo.MANUSCRIPT_TYPE_CMS == info.manuscripttype) {

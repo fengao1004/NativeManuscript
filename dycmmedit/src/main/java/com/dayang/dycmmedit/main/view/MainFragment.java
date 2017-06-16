@@ -53,6 +53,7 @@ import com.dayang.dycmmedit.redact.view.RedactActivity;
 import com.dayang.dycmmedit.redact.view.WeChatListActivity;
 import com.dayang.dycmmedit.utils.Constant;
 import com.dayang.dycmmedit.utils.DisplayUtils;
+import com.dayang.uploadlib.UploadFileManager;
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -277,11 +278,12 @@ public class MainFragment extends BaseFragment implements MainViewInterface, Mat
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!openAddbutton) {
-                    showAdd();
-                } else {
-                    closeAdd();
-                }
+//                if (!openAddbutton) {
+//                    showAdd();
+//                } else {
+//                    closeAdd();
+//                }
+                UploadFileManager.getInstance().openMissionManager();
             }
         });
 

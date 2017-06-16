@@ -3,12 +3,14 @@ package com.dayang.dycmmedit.splash;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.dayang.dycmmedit.R;
 import com.dayang.dycmmedit.base.BaseActivity;
 import com.dayang.login.LoginActivity;
 import com.dayang.login.LoginManger;
+import com.dayang.uploadlib.UploadFileManager;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import butterknife.BindView;
@@ -32,7 +34,13 @@ public class SplashActivity extends BaseActivity {
     public void initView() {
         String imageUri = "drawable://" + R.drawable.start;
         ImageLoader.getInstance().displayImage(imageUri, splashImageView);
-        handle.sendEmptyMessageDelayed(ENTERMAIN, 1000 * 2);
+//        handle.sendEmptyMessageDelayed(ENTERMAIN, 1000 * 2);
+        splashImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UploadFileManager.getInstance().openMissionManager();
+            }
+        });
     }
 
     @Override

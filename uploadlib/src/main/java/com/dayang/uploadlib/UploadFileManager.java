@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.dayang.uploadlib.activity.MissionActivity;
 import com.dayang.uploadlib.iterface.UpLoadLibInterface;
 import com.dayang.uploadlib.model.MissionInfo;
 import com.dayang.uploadlib.model.MissionInfoDao;
@@ -27,7 +28,6 @@ public class UploadFileManager implements UpLoadLibInterface {
     static UploadFileManager manager;
     Context context;
     private UploadServiceBinder binder;
-    private Listener lis;
 
     private UploadFileManager() {
 
@@ -40,11 +40,9 @@ public class UploadFileManager implements UpLoadLibInterface {
         return manager;
     }
 
-    public UploadFileManager init(Context context, Listener lis) {
+    public UploadFileManager init(Context context) {
         this.context = context;
-        this.lis = lis;
         context.bindService(new Intent(context, UpLoadService.class), conn, Context.BIND_AUTO_CREATE);
-        Log.i("fengao", "onServiceConnected: " + new Date().getTime());
         return manager;
     }
 
@@ -56,7 +54,6 @@ public class UploadFileManager implements UpLoadLibInterface {
             Log.i("fengao", "onServiceConnected: " + new Date().getTime());
             binder = (UploadServiceBinder) service;
             binder.startDBMission();
-            lis.do1();
         }
 
         /** 无法获取到服务对象时的操作 */
@@ -163,7 +160,17 @@ public class UploadFileManager implements UpLoadLibInterface {
         context.unbindService(conn);
     }
 
-    public interface Listener {
-        void do1();
+    public void setStartAppMode(boolean isStart) {
+        SharedPreferencesUtils.setParam(context, Constant.STARTAPPMODE, isStart);
+    }
+
+    public boolean getStartAppMode() {
+        return SharedPreferencesUtils.getParam(context, Constant.STARTAPPMODE, false);
+    }
+
+    public void openMissionManager() {
+        Intent intent = new Intent(context, MissionActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }

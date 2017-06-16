@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.dayang.dycmmedit.BuildConfig;
 import com.dayang.dycmmedit.R;
+import com.dayang.uploadlib.UploadFileManager;
 import com.elvishew.xlog.LogConfiguration;
 import com.elvishew.xlog.LogLevel;
 import com.elvishew.xlog.XLog;
@@ -75,5 +76,6 @@ public class MyApplication extends Application {
         ImageLoader.getInstance().init(configuration);
 //        ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(this);
 //        ImageLoader.getInstance().init(configuration);
+        UploadFileManager.getInstance().init(this);
     }
 }

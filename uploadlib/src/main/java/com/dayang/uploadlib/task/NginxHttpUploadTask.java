@@ -13,6 +13,8 @@ import com.dayang.uploadlib.util.NetWorkState;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+
 
 /**
  * Created by 冯傲 on 2017/6/1.
@@ -43,6 +45,7 @@ public class NginxHttpUploadTask extends BaseTask {
     private boolean pause;
     private boolean del;
 
+    private long progress;
     private DYHFileUploader.OnInfoUpdatedListener mStatusUpdatedListener = new DYHFileUploader.OnInfoUpdatedListener() {
         @Override
         public void onInfoUpdated(DYHFileUploadInfo dyhFileUploadInfo) {
@@ -62,13 +65,19 @@ public class NginxHttpUploadTask extends BaseTask {
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.e(TAG, "onInfoUpdated: 新文件名获取错误");
+                        newFileName = new File(filePath).getName();
                     }
                     Log.i(TAG, "StatusFinished");
                     working = false;
                     finished = true;
                     break;
                 case DYHFileUploadInfo.StatusProcessing:
-                    //TODO 可能存在进度上不去的问题或者log打印过快
+                    if (progress == 0 || dyhFileUploadInfo.uploadedBytes != progress) {
+                        missionInfo.setProgress((int) (dyhFileUploadInfo.uploadedBytes / 1024));
+                        missionInfo.setSpeed(dyhFileUploadInfo.speed);
+                        Log.i(TAG, "StatusProcessing" + dyhFileUploadInfo.uploadedBytes);
+                    }
+                    progress = dyhFileUploadInfo.uploadedBytes;
                     Log.i(TAG, "StatusProcessing" + dyhFileUploadInfo.uploadedBytes);
                     break;
                 case DYHFileUploadInfo.StatusStopped:
@@ -151,6 +160,41 @@ public class NginxHttpUploadTask extends BaseTask {
         //TODO 提前判断任务状态
         working = true;
         fileUploader.setTask(taskInfo);
+        DYHFileUploadInfo dyhFileUploadInfo = new DYHFileUploadInfo();
+        fileUploader.getInfo(dyhFileUploadInfo);
+        int status = dyhFileUploadInfo.status;
+        switch (status) {
+            case DYHFileUploadInfo.StatusError:
+                Log.i(TAG, "上传前: StatusError");
+                missionInfo.setStatus(MissionInfo.UPLOADERROR);
+                error = true;
+                working = false;
+                break;
+            case DYHFileUploadInfo.StatusFinished:
+                Log.i(TAG, "上传前: StatusFinished");
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                working = false;
+                finished = true;
+                break;
+            case DYHFileUploadInfo.StatusStopped:
+                Log.i(TAG, "上传前: StatusStopped");
+                missionInfo.setStatus(MissionInfo.UPLOADING);
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                break;
+            case DYHFileUploadInfo.StatusProcessing:
+                Log.i(TAG, "上传前: StatusProcessing");
+                missionInfo.setStatus(MissionInfo.UPLOADING);
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                break;
+            case DYHFileUploadInfo.StatusUnkown:
+                Log.i(TAG, "上传前: StatusUnkown");
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                break;
+        }
         boolean ret = fileUploader.start(false);
         if (!ret) {
             working = false;
@@ -178,6 +222,7 @@ public class NginxHttpUploadTask extends BaseTask {
             missionInfo.setStatus(MissionInfo.PAUSEING);
             return;
         }
+        //TODO 新版上传
         if (finished) {
             missionInfo.setStatus(MissionInfo.UPLOADCOMPLETED);
             fileStatusNotifyCallBack(fileStatusNotifyURL,

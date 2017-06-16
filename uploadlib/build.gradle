@@ -35,11 +35,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:design:25.1.1'
+    compile 'org.greenrobot:greendao:3.2.2'
+    compile 'org.greenrobot:greendao-generator:3.0.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
+    compile 'com.zcw:togglebutton-library:1.0.0'
     testCompile 'junit:junit:4.12'
-    compile project(':uploadfile')
-
-    compile'org.greenrobot:greendao:3.2.2'
-    compile'org.greenrobot:greendao-generator:3.0.0'
 }
 greendao {
     schemaVersion 2

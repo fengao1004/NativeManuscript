@@ -24,11 +24,8 @@ import com.dayang.dycmmedit.info.UserListAndTargetSystem;
 import com.dayang.dycmmedit.info.UserModel;
 import com.dayang.dycmmedit.main.presenter.MainPresenterImpl;
 import com.dayang.dycmmedit.utils.PublicResource;
-import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import org.apache.commons.net.util.Base64;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;

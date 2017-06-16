@@ -1,29 +1,20 @@
 package com.dayang.uploadlib.task;
 
-import android.app.Activity;
-import android.os.Handler;
 import android.util.Log;
 
 import com.dayang.uploadlib.model.MissionInfo;
 import com.dayang.uploadlib.service.UpLoadService;
-import com.google.gson.JsonObject;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  * Created by 冯傲 on 2017/6/1.

@@ -14,6 +14,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * Created by 冯傲 on 2017/6/1.
@@ -26,6 +27,7 @@ public class FtpUploadTask extends BaseTask {
     private String ftpUrl;
     public final static String TAG = "cmtools_log";
     private String port;
+    private long progress;
     private String username;
     private String password;
     private String filePath;
@@ -40,7 +42,7 @@ public class FtpUploadTask extends BaseTask {
     private boolean del;
     private DYHFileUploader fileUploader = null;
     private DYHFileUploadTask taskInfo;
-
+    int i;
     MissionInfo missionInfo;
     UpLoadService service;
 
@@ -60,8 +62,14 @@ public class FtpUploadTask extends BaseTask {
                     finished = true;
                     break;
                 case DYHFileUploadInfo.StatusProcessing:
-                    //TODO ftp可能存在问题
-                    Log.i(TAG, "StatusProcessing" + dyhFileUploadInfo.uploadedBytes);
+                    long progress = dyhFileUploadInfo.uploadedBytes / 1024;
+                    if (progress == 0 || progress > FtpUploadTask.this.progress + dyhFileUploadInfo.totalBytes / 1024 / 500) {
+                        Log.i(TAG, "onInfoUpdated: fengao_handler " + progress + "threadName: " + Thread.currentThread().getName() + "  i: " + i + " FtpUploadTask.this.progress+ %0.2 " + (FtpUploadTask.this.progress / 1024 + dyhFileUploadInfo.uploadedBytes / 1024 / 500));
+                        i++;
+                        missionInfo.setProgress((int) progress);
+                        missionInfo.setSpeed(dyhFileUploadInfo.speed);
+                        FtpUploadTask.this.progress = progress;
+                    }
                     break;
                 case DYHFileUploadInfo.StatusStopped:
                     Log.i(TAG, "StatusStopped");
@@ -92,8 +100,10 @@ public class FtpUploadTask extends BaseTask {
         missionInfo.setPauseListener(new MissionInfo.PauseListener() {
             @Override
             public void pause() {
+                Log.i(TAG, "pppppppppppppppppppppppppppppppppause: " + new Date().getTime());
                 pause = true;
                 fileUploader.stop();
+                Log.i(TAG, "sssssssssssssssssssssssssssssssssssstop: " + new Date().getTime());
             }
         });
         missionInfo.setDelListener(new MissionInfo.DelListener() {
@@ -156,16 +166,52 @@ public class FtpUploadTask extends BaseTask {
         working = true;
         error = false;
         fileUploader.setTask(taskInfo);
-        //TODO 提前判断任务状态
-        boolean ret = fileUploader.start(false);
-        if (!ret) {
-            working = false;
-            error = true;
-        }
-        while (working) {
-            SystemClock.sleep(50);
-            if (error) {
+        DYHFileUploadInfo dyhFileUploadInfo = new DYHFileUploadInfo();
+        fileUploader.getInfo(dyhFileUploadInfo);
+        int status = dyhFileUploadInfo.status;
+        switch (status) {
+            case DYHFileUploadInfo.StatusError:
+                Log.i(TAG, "上传前: StatusError");
+                missionInfo.setStatus(MissionInfo.UPLOADERROR);
+                error = true;
+                working = false;
                 break;
+            case DYHFileUploadInfo.StatusFinished:
+                Log.i(TAG, "上传前: StatusFinished");
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                working = false;
+                finished = true;
+                break;
+            case DYHFileUploadInfo.StatusStopped:
+                Log.i(TAG, "上传前: StatusStopped");
+                missionInfo.setStatus(MissionInfo.UPLOADING);
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                break;
+            case DYHFileUploadInfo.StatusProcessing:
+                Log.i(TAG, "上传前: StatusProcessing");
+                missionInfo.setStatus(MissionInfo.UPLOADING);
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                break;
+            case DYHFileUploadInfo.StatusUnkown:
+                Log.i(TAG, "上传前: StatusUnkown");
+                missionInfo.setProgress((int) ((dyhFileUploadInfo.uploadedBytes) / 1024));
+                missionInfo.setLength((int) ((dyhFileUploadInfo.totalBytes) / 1024));
+                break;
+        }
+        if (working == true) {
+            boolean ret = fileUploader.start(false);
+            if (!ret) {
+                working = false;
+                error = true;
+            }
+            while (working) {
+                SystemClock.sleep(50);
+                if (error) {
+                    break;
+                }
             }
         }
         if (error) {
@@ -187,13 +233,12 @@ public class FtpUploadTask extends BaseTask {
         if (finished) {
             missionInfo.setStatus(MissionInfo.UPLOADCOMPLETED);
             fileStatusNotifyCallBack(fileStatusNotifyURL,
-                    getNotifyRequestParam(false, filePath, taskId));
+                    getNotifyRequestParam(finished, filePath, taskId));
         } else {
             missionInfo.setStatus(MissionInfo.UPLOADERROR);
             fileStatusNotifyCallBack(fileStatusNotifyURL,
-                    getNotifyRequestParam(true, filePath, taskId));
+                    getNotifyRequestParam(finished, filePath, taskId));
         }
-        return;
     }
 
     public void makeDirectory() {

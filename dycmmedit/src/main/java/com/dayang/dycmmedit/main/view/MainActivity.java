@@ -1,38 +1,21 @@
 package com.dayang.dycmmedit.main.view;
 
-import android.app.Activity;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.view.ViewCompat;
-import android.util.TypedValue;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.MotionEvent;
+import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.dayang.dycmmedit.R;
 import com.dayang.dycmmedit.base.BaseActivity;
 import com.dayang.dycmmedit.utils.StatusBarUtil;
-import com.dayang.uploadlib.receiver.NetworkConnectChangedReceiver;
 import com.elvishew.xlog.XLog;
-import com.githang.statusbar.StatusBarCompat;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import butterknife.BindView;
 
@@ -67,11 +50,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 .add(R.id.root_view, mainFragment)
                 .show(mainFragment).commit();
         IntentFilter filter = new IntentFilter();
-        NetworkConnectChangedReceiver mNetworkChangeListener = new NetworkConnectChangedReceiver();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
-        filter.addAction("android.net.wifi.STATE_CHANGE");
-        registerReceiver(mNetworkChangeListener, filter);
         headerView = mNavigationView.getHeaderView(0);
         XLog.i("count: " + mNavigationView.getChildCount());
         headerView.setMinimumHeight(height);

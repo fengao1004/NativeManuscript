@@ -1,13 +1,10 @@
 package com.dayang.dycmmedit.redact.presenter;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.dayang.dycmmedit.http.BaseObserver;
-import com.dayang.dycmmedit.http.RetrofitHelper;
 import com.dayang.dycmmedit.info.ManuscriptListInfo;
 import com.dayang.dycmmedit.info.RequestAuditManuscript;
 import com.dayang.dycmmedit.info.RequestSubmitManuscript;
@@ -18,33 +15,24 @@ import com.dayang.dycmmedit.info.ResultSaveManuscriptInfo;
 import com.dayang.dycmmedit.info.UserInfo;
 import com.dayang.dycmmedit.info.UserListAndTargetSystem;
 import com.dayang.dycmmedit.redact.model.RedactModel;
-import com.dayang.dycmmedit.redact.view.RedactActivity;
 import com.dayang.dycmmedit.redact.view.RedactViewInterface;
 import com.dayang.dycmmedit.utils.PrivilegeUtil;
 import com.dayang.dycmmedit.utils.PublicResource;
-import com.dayang.uploadfile.upload.Constants;
-import com.dayang.uploadfile.upload.FtpUpload;
-import com.dayang.uploadfile.upload.HttpUpload;
-import com.dayang.uploadfile.upload.UploadFileThread;
+import com.dayang.uploadlib.UploadFileManager;
+import com.dayang.uploadlib.model.MissionInfo;
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import org.apache.commons.net.util.Base64;
-import org.reactivestreams.Subscriber;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.nostra13.universalimageloader.core.ImageLoader.TAG;
 
 /**
  * Created by 冯傲 on 2017/5/9.
@@ -53,6 +41,7 @@ import static com.nostra13.universalimageloader.core.ImageLoader.TAG;
 
 public class RedactPresenterImpl implements RedactPresenterInterface {
 
+    private static final String TAG = "cmtools_log";
     private RedactViewInterface redactViewInterface;
     private final Activity activity;
     private final RedactModel redactModel;
@@ -102,37 +91,31 @@ public class RedactPresenterImpl implements RedactPresenterInterface {
     @Override
     public void uploadFile(final String path, String taskId, final int requestCode) {
         redactViewInterface.showWaiting("文件上传中");
-        Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                redactViewInterface.removeWaiting();
-                switch (msg.what) {
-                    case Constants.UPLOADSUCCESS:
-                        redactViewInterface.upLoadFileComplete(path, requestCode);
-                        Toast.makeText(activity, "上传成功", Toast.LENGTH_SHORT).show();
-                        break;
-                    case Constants.UPLOADFAILTURE:
-                        Toast.makeText(activity, "上传失败", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        };
-        UploadFileThread uploadFileThread;
         String storageURL = PublicResource.getInstance().getStorageURL();
         String fileStatusNotifyURL = PublicResource.getInstance().getFileStatusNotifyURL();
-        if (storageURL.startsWith("http")) {
-            uploadFileThread = new HttpUpload(storageURL,
-                    fileStatusNotifyURL, path, handler,
-                    taskId);
-            uploadFileThread.start();
-        } else if (storageURL.startsWith("ftp")) {
-            Log.i(TAG, "uploadFiles: " + fileStatusNotifyURL);
-            uploadFileThread = new FtpUpload(storageURL, path,
-                    fileStatusNotifyURL, handler,
-                    taskId);
-            uploadFileThread.start();
-        }
+        Log.i(TAG, "storageURL: " + storageURL);
+        Log.i(TAG, "filePath: " + path);
+        Log.i(TAG, "taskId: " + taskId);
+        Log.i(TAG, "fileStatusNotifyURL: " + fileStatusNotifyURL);
+        MissionInfo missionInfo = new MissionInfo();
+        missionInfo.setCompleteListener(new MissionInfo.CompleteListener() {
+            @Override
+            public void UploadComplete(int code) {
+                redactViewInterface.removeWaiting();
+                if (code == MissionInfo.UPLOADERROR) {
+                    Toast.makeText(activity, "上传失败", Toast.LENGTH_SHORT).show();
+                } else {
+                    redactViewInterface.upLoadFileComplete(path, requestCode);
+                    Toast.makeText(activity, "上传成功", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        missionInfo.setFilePath(path);
+        missionInfo.setSessionId(taskId);
+        missionInfo.setFileStatusNotifyURL(fileStatusNotifyURL);
+        missionInfo.setTaskId(taskId);
+        missionInfo.setStorageURL(storageURL);
+        UploadFileManager.getInstance().addMission(missionInfo);
     }
 
 

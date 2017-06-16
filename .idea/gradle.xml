@@ -12,8 +12,6 @@
             <option value="$PROJECT_DIR$/loginlib" />
             <option value="$PROJECT_DIR$/pickmediafile" />
             <option value="$PROJECT_DIR$/richeditor" />
-            <option value="$PROJECT_DIR$/test" />
-            <option value="$PROJECT_DIR$/uploadfile" />
             <option value="$PROJECT_DIR$/uploadlib" />
           </set>
         </option>

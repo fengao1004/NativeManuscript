@@ -68,6 +68,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
             return;
         }
         infoList.addAll(dbList);
+        //默认不自动开启未完成任务
         Boolean param = SharedPreferencesUtils.getParam(this, Constant.STARTAPPMODE, false);
         if (param) {
             //会遍历四边结合
@@ -364,7 +365,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
         Integer maxThreadCount = getMaxThreadCount();
         if (uploadTaskCount < maxThreadCount || (info.getStatus() == MissionInfo.UPLOADING) || (info.getStatus() == MissionInfo.WAITINGNETWORDK) || (info.getStatus() == MissionInfo.WAITINGNETWORDK_WIFI)) {
             //获取4g wifi策略
-            //true 禁止4g上传 false允许4g上传
+            //true 禁止4g上传 false允许4g上传 默认false
             Boolean forbidMobileNetworkUpload = SharedPreferencesUtils.getParam(this, Constant.STRATEGY_4G, false);
             int netType = NetWorkState.GetNetype(this);
             if (netType == NetWorkState.NONE) {
@@ -373,7 +374,8 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
                 info.setStatus(MissionInfo.WAITINGNETWORDK_WIFI);
             } else {
                 info.setStatus(MissionInfo.UPLOADING);
-                threadPool.execute(info.getTask(this));
+                Runnable task = info.getTask(this);
+                threadPool.execute(task);
             }
         } else {
             info.setStatus(MissionInfo.WAITINGUPLOAD);
@@ -504,7 +506,7 @@ public class UpLoadService extends Service implements UpLoadServiceInterface {
 
     @Override
     public void setStartAppMode(boolean isStart) {
-        SharedPreferencesUtils.getParam(this, Constant.STARTAPPMODE, isStart);
+        SharedPreferencesUtils.setParam(this, Constant.STARTAPPMODE, isStart);
     }
 
 

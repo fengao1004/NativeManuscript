@@ -16,7 +16,11 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
 import org.greenrobot.greendao.annotation.Generated;
 
-import java.net.URL;
+import java.io.File;
+import java.util.Date;
+
+import static com.dayang.uploadlib.task.FtpUploadTask.TAG;
+
 
 /**
  * Created by 冯傲 on 2017/6/1.
@@ -46,7 +50,7 @@ public class MissionInfo {
     private int progress;
     private int status;
     private int priority;
-    private boolean isRename;
+    private boolean isRename = false;
     private String sessionId;
     private String tenantId;
     private String fileStatusNotifyURL;
@@ -59,12 +63,14 @@ public class MissionInfo {
     private String uploadTrunkInfoURL;
     private String remoteRootPath;
 
-
     @Transient
     UploadStatusListener uploadStatusListener;
 
     @Transient
     PauseListener pauseListener;
+
+    @Transient
+    CompleteListener completeListener;
 
     @Transient
     Handler handler = new Handler() {
@@ -73,8 +79,12 @@ public class MissionInfo {
             super.handleMessage(msg);
             switch (msg.what) {
                 case UPDATESTATUS:
+                    int[] a = (int[]) msg.obj;
                     if (uploadStatusListener != null) {
-                        uploadStatusListener.uploadStatus(status, progress, "");
+                        uploadStatusListener.uploadStatus(a[0], a[1], "");
+                    }
+                    if ((a[0] == UPLOADERROR || a[0] == UPLOADCOMPLETED) && completeListener != null) {
+                        completeListener.UploadComplete(status);
                     }
                     MissionInfoDao dbHelper = UploadFileManager.getInstance().getDBHelper();
                     dbHelper.update(MissionInfo.this);
@@ -82,21 +92,37 @@ public class MissionInfo {
             }
         }
     };
+    @Transient
     private DelListener delListener;
+    private double speed;
 
     public MissionInfo() {
         this.status = WAITINGUPLOAD;
     }
 
-    @Generated(hash = 1014643628)
-    public MissionInfo(Long id, int length, int progress, int status, int priority,
-                       String sessionId) {
+    @Generated(hash = 1299123161)
+    public MissionInfo(Long id, int length, int progress, int status, int priority, boolean isRename,
+                       String sessionId, String tenantId, String fileStatusNotifyURL, String customParam, String filePath,
+                       String taskId, String storageURL, String fileSessionId, String indexNO, String uploadTrunkInfoURL,
+                       String remoteRootPath, double speed) {
         this.id = id;
         this.length = length;
         this.progress = progress;
         this.status = status;
         this.priority = priority;
+        this.isRename = isRename;
         this.sessionId = sessionId;
+        this.tenantId = tenantId;
+        this.fileStatusNotifyURL = fileStatusNotifyURL;
+        this.customParam = customParam;
+        this.filePath = filePath;
+        this.taskId = taskId;
+        this.storageURL = storageURL;
+        this.fileSessionId = fileSessionId;
+        this.indexNO = indexNO;
+        this.uploadTrunkInfoURL = uploadTrunkInfoURL;
+        this.remoteRootPath = remoteRootPath;
+        this.speed = speed;
     }
 
     public void setSessionId(String sessionId) {
@@ -113,11 +139,13 @@ public class MissionInfo {
     }
 
     public void setProgress(int progress) {
-        this.progress = progress;
-        Message mes = new Message();
-        mes.what = UPDATESTATUS;
-        mes.obj = progress;
-        handler.sendMessage(mes);
+        if (this.progress != progress) {
+            this.progress = progress;
+            Message mes = new Message();
+            mes.what = UPDATESTATUS;
+            mes.obj = new int[]{this.status, progress};
+            handler.sendMessage(mes);
+        }
     }
 
     public void del() {
@@ -160,9 +188,13 @@ public class MissionInfo {
     }
 
     public void setStatus(int status) {
-        //TODO 更新数据库
-        this.status = status;
-        handler.sendEmptyMessage(UPDATESTATUS);
+        if (status != this.status) {
+            this.status = status;
+            Message mes = new Message();
+            mes.what = UPDATESTATUS;
+            mes.obj = new int[]{status, this.progress};
+            handler.sendEmptyMessage(UPDATESTATUS);
+        }
     }
 
     public void setPauseListener(PauseListener pauseListener) {
@@ -191,6 +223,10 @@ public class MissionInfo {
         return remoteRootPath;
     }
 
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
     public interface UploadStatusListener {
         void uploadStatus(int status, int progress, String message);
     }
@@ -202,6 +238,10 @@ public class MissionInfo {
 
     public interface PauseListener {
         void pause();
+    }
+
+    public void setCompleteListener(CompleteListener completeListener) {
+        this.completeListener = completeListener;
     }
 
     public PauseListener getPauseListener() {
@@ -302,10 +342,31 @@ public class MissionInfo {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+        this.length = (int) (new File(filePath).length() / 1024);
     }
 
     public void setRemoteRootPath(String remoteRootPath) {
         this.remoteRootPath = remoteRootPath;
+    }
+
+    public boolean getIsRename() {
+        return this.isRename;
+    }
+
+    public void setIsRename(boolean isRename) {
+        this.isRename = isRename;
+    }
+
+    public String getFilePath() {
+        return this.filePath;
+    }
+
+    public double getSpeed() {
+        return this.speed;
+    }
+
+    public interface CompleteListener {
+        void UploadComplete(int code);
     }
 
 }
