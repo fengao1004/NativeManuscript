@@ -214,13 +214,19 @@ public class ManuscriptListInfo implements Serializable {
                 break;
             }
         }
-        byte[] bytes = Base64.encodeBase64(this.h5content.getBytes());
+        String string1 = this.h5content;
+        if (string1.endsWith("<p><br/></p>")) {
+            string1 = string1.substring(0,string1.length() - 12);
+        }
+        byte[] bytes = Base64.encodeBase64(string1.getBytes());
         String h5Content = new String(bytes);
         map.put("columnid", columnid);
         map.put("textcontent", this.textcontent);
         map.put("h5content", h5Content);
         Map<String, Integer> map2 = new HashMap<>();
         map2.put("iscomment", this.iscomment);
+        map2.put("fathersonmark", this.fathersonmark);
+        map2.put("arrayindex", this.arrayindex);
         Map<String, Map> mapMap = new HashMap<>();
         mapMap.put("stringMap", map);
         mapMap.put("int", map2);

@@ -232,7 +232,10 @@ public class RedactPresenterImpl implements RedactPresenterInterface {
             redactViewInterface.showTextDialog("内容不能为空");
             return;
         }
-        //TODO 判断微信稿件长度 web稿件发布方式 新媒体栏目
+        if (info.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_WECHAT && info.mnum >= 8) {
+            redactViewInterface.showTextDialog("微信稿件过长请删除后在提交");
+            return;
+        }
         boolean hasPrivilege = PrivilegeUtil.hasPrivilege(PrivilegeUtil.PRIVILEGE_SUBMIT, info);
         if (!hasPrivilege) {
             redactViewInterface.showTextDialog("对不起你没有权限提交");

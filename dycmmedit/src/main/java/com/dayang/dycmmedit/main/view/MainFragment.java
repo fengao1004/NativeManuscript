@@ -274,16 +274,15 @@ public class MainFragment extends BaseFragment implements MainViewInterface, Mat
         iv_tool_title.setText("全部稿件");
         ((MainActivity) activity).setSupportActionBar(toolbar);
         ((MainActivity) activity).initDrawerLayout(toolbar);
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (!openAddbutton) {
-//                    showAdd();
-//                } else {
-//                    closeAdd();
-//                }
-                UploadFileManager.getInstance().openMissionManager();
+                if (!openAddbutton) {
+                    showAdd();
+                } else {
+                    closeAdd();
+                }
+//                UploadFileManager.getInstance().openMissionManager();
             }
         });
 
@@ -325,7 +324,7 @@ public class MainFragment extends BaseFragment implements MainViewInterface, Mat
         ll_add_weibo.setClickable(false);
         ll_add_wechat.setClickable(false);
         iv_shadow.setAlpha(0.0f);
-        unitDistance = DisplayUtils.dip2px(activity, 56);
+        unitDistance = DisplayUtils.dip2px(activity, 66);
         origin = ll_add_tv.getTranslationY();
 
         iv_shadow.setOnClickListener(new View.OnClickListener() {
@@ -493,7 +492,6 @@ public class MainFragment extends BaseFragment implements MainViewInterface, Mat
     @Override
     public void showTextDialog(String title, String message) {
         new MaterialDialog.Builder(getActivity())
-                .title(title)
                 .content(message)
                 .positiveText("确定")
                 .show();
@@ -636,7 +634,7 @@ public class MainFragment extends BaseFragment implements MainViewInterface, Mat
                 float v2 = -(unitDistance * value * 2) + origin;
                 float v3 = -(unitDistance * value * 3) + origin;
                 float v4 = -(unitDistance * value * 4) + origin;
-                float angle = value * (180.0f + 22.5f);
+                float angle = value * (180.0f + 45.0f);
                 ll_add_tv.setAlpha(value);
                 ll_add_web.setAlpha(value);
                 iv_shadow.setAlpha(value);

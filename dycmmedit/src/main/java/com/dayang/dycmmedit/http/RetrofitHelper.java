@@ -170,7 +170,7 @@ public class RetrofitHelper {
     }
 
     public Observable<ResultCommonInfo> IsOutOfMemoryOfTVManuscript(Map<String, String> fields) {
-        return apiService.auditAddCensorAuditor(fields);
+        return apiService.IsOutOfMemoryOfTVManuscript(fields);
     }
 
     public Observable<JsonObject> getTVTargetSystem(Map<String, String> fields) {

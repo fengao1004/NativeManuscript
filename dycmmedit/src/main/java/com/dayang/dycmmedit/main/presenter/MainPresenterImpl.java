@@ -181,6 +181,7 @@ public class MainPresenterImpl implements MainPresenter {
                                        manuscriptListInfo.columnid = resultSaveManuscriptInfo.getData().columnid;
                                        manuscriptListInfo.manuscriptid = resultSaveManuscriptInfo.getData().manuscriptid;
                                        manuscriptListInfo.manuscripttype = type;
+                                       manuscriptListInfo.init(manuscriptListInfo.manuscripttype);
                                        if (status) {
                                            mainViewInterface.enterRedact(manuscriptListInfo);
                                        } else {

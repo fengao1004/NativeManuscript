@@ -6,6 +6,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -27,6 +28,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.Selection;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -85,6 +87,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
+
+import static com.dayang.uploadlib.task.FtpUploadTask.TAG;
 
 /**
  * Created by 冯傲 on 2017/5/8.
@@ -197,6 +201,8 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
     private RedactPresenterImpl redactPresenter;
     private CreateManuscriptDialog dialog;
     private boolean hasChange = false;
+    private String editorH5content="";
+
     String title = "";
     String originalTitle = "";
     //屏幕高度
@@ -309,6 +315,7 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
         setBackKeyListener(new BaseActivity.BackKeyListener() {
             @Override
             public boolean onBackKeyDown() {
+                editorH5content = editor.getHtml();
                 back();
                 return true;
             }
@@ -331,6 +338,7 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                editorH5content = editor.getHtml();
                 back();
             }
         });
@@ -890,18 +898,29 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
                 }
                 return;
             case ManuscriptListInfo.MANUSCRIPT_TYPE_WECHAT:
-                if (manuscriptListInfo.h5content.equals(editor.getHtml()) || !hasPrivilege) {
+                if (comparisonString(editorH5content, manuscriptListInfo.h5content)|| !hasPrivilege) {
                     activity.back(manuscriptListInfo, this, hasChange);
                 } else {
                     saveChangeDialog.show();
                 }
                 return;
         }
-        if (manuscriptListInfo.h5content.equals(editor.getHtml())) {
+        if (comparisonString(editorH5content, manuscriptListInfo.h5content)) {
             activity.back(manuscriptListInfo, this, hasChange);
         } else {
             saveChangeDialog.show();
         }
+
+    }
+
+    public boolean comparisonString(String string1, String string2) {
+        if (string1.equals(string2)) {
+            return true;
+        }
+        if (string1.endsWith("<p><br/></p>")) {
+            string1 = string1.substring(0,string1.length() - 12);
+        }
+        return string1.equals(string2);
     }
 
     public void upLoadFile(String path, int requestCode) {
@@ -955,7 +974,11 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
                     menu.getItem(i).setEnabled(false);
                 }
             }
-            if (menu.getItem(i).getItemId() == R.id.action_submit && (manuscriptListInfo.status != ManuscriptListInfo.MANUSCRIPT_STATUS_WAITING_SUBMIT || (manuscriptListInfo.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_WECHAT && manuscriptListInfo.arrayindex != 0))) {
+            if (menu.getItem(i).getItemId() == R.id.action_submit
+                    && ((manuscriptListInfo.status == ManuscriptListInfo.MANUSCRIPT_STATUS_PASS
+                    || manuscriptListInfo.status == ManuscriptListInfo.MANUSCRIPT_STATUS_WAITING_PENDING)
+                    || (manuscriptListInfo.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_WECHAT
+                    && manuscriptListInfo.arrayindex != 0))) {
                 menu.getItem(i).setVisible(false);
                 menu.getItem(i).setEnabled(false);
             }
@@ -994,6 +1017,7 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
                 submit();
                 break;
             case R.id.action_preview:
+
                 actionPreviewManuscript();
                 break;
             case R.id.action_audit:
@@ -1033,12 +1057,22 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
     }
 
 
-    public void showTextDialog(String title, String message) {
-        new MaterialDialog.Builder(getActivity())
-                .title(title)
+    public void showTextDialog(String title, final String message) {
+        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .content(message)
                 .positiveText("确定")
+                .canceledOnTouchOutside(false)
+                .cancelable(false)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (message.equals("审核成功") || message.equals("提交稿件成功")) {
+                            activity.back(manuscriptListInfo, RedactFragment.this, true);
+                        }
+                    }
+                })
                 .show();
+
     }
 
     @Override
@@ -1111,6 +1145,21 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
     }
 
     private void actionAudit() {
+        String html = editor.getHtml();
+        String textContent = editor.getTextContent();
+        if (html == null) {
+            html = "";
+        }
+        if (textContent == null) {
+            textContent = "";
+        }
+        if (manuscriptListInfo.manuscripttype != ManuscriptListInfo.MANUSCRIPT_TYPE_WEIBO) {
+            manuscriptListInfo.h5content = html;
+            manuscriptListInfo.textcontent = textContent;
+        } else {
+            manuscriptListInfo.h5content = "";
+        }
+        manuscriptListInfo.header = title.equals("") ? originalTitle : title;
         redactPresenter.getAuditMessage(manuscriptListInfo);
     }
 
@@ -1126,7 +1175,8 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
     }
 
     private void actionPreviewManuscript() {
-        manuscriptListInfo.h5content = editor.getHtml() == null ? "" : editor.getHtml();
+        String html = editor.getHtml();
+        manuscriptListInfo.h5content = html == null ? "" : html;
         manuscriptListInfo.header = title.equals("") ? originalTitle : title;
         Intent intent = new Intent(getActivity(), PreviewActivity.class);
         intent.putExtra("info", manuscriptListInfo);
@@ -1134,6 +1184,21 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
     }
 
     private void submit() {
+        String html = editor.getHtml();
+        String textContent = editor.getTextContent();
+        if (html == null) {
+            html = "";
+        }
+        if (textContent == null) {
+            textContent = "";
+        }
+        if (manuscriptListInfo.manuscripttype != ManuscriptListInfo.MANUSCRIPT_TYPE_WEIBO) {
+            manuscriptListInfo.h5content = html;
+            manuscriptListInfo.textcontent = textContent;
+        } else {
+            manuscriptListInfo.h5content = "";
+        }
+        manuscriptListInfo.header = title.equals("") ? originalTitle : title;
         redactPresenter.getSubmitMessage(manuscriptListInfo);
     }
 
@@ -1141,12 +1206,21 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
         uploadThumbnailDialog.show();
     }
 
-    private void save(boolean isBack) {
+    private void save(final boolean isBack) {
         String html = editor.getHtml();
+        String textContent = editor.getTextContent();
         if (html == null) {
             html = "";
         }
-        manuscriptListInfo.h5content = html;
+        if (textContent == null) {
+            textContent = "";
+        }
+        if (manuscriptListInfo.manuscripttype != ManuscriptListInfo.MANUSCRIPT_TYPE_WEIBO) {
+            manuscriptListInfo.h5content = html;
+            manuscriptListInfo.textcontent = textContent;
+        } else {
+            manuscriptListInfo.h5content = "";
+        }
         manuscriptListInfo.header = title.equals("") ? originalTitle : title;
         redactPresenter.save(manuscriptListInfo, isBack);
     }
@@ -1177,15 +1251,15 @@ public class RedactFragment extends BaseFragment implements RedactViewInterface,
             boolean videoFileType = MediaFile.isVideoFileType(path);
             boolean imageFileType = MediaFile.isImageFileType(path);
             if (audioFileType) {
-                editor.insertAudio(url, "音频");
+                editor.insertAudio(url);
                 editor.focusEditor();
             }
             if (videoFileType) {
-                editor.insertVideo(url, "视频");
+                editor.insertVideo(url);
                 editor.focusEditor();
             }
             if (imageFileType) {
-                editor.insertImage(url, "图片");
+                editor.insertImage(url);
                 editor.focusEditor();
             }
         } else if (requestCode == UPLOAD_REQUESTCODE_WEIBO) {

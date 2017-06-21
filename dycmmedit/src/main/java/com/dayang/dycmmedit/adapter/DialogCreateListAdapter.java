@@ -3,6 +3,7 @@ package com.dayang.dycmmedit.adapter;
 import android.content.Context;
 import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import static android.R.layout.simple_spinner_dropdown_item;
  */
 
 public class DialogCreateListAdapter extends RecyclerView.Adapter<DialogCreateListHolder> {
+    private static final String TAG = "cmtools_log";
     Context context;
     ManuscriptListInfo info;
     boolean canRedact;
@@ -73,6 +75,7 @@ public class DialogCreateListAdapter extends RecyclerView.Adapter<DialogCreateLi
 
     @Override
     public void onBindViewHolder(final DialogCreateListHolder holder, int position) {
+        Log.i(TAG, "onBindViewHolder: "+position);
         int itemCount = list.size();
         holder.ll_normal.setVisibility(View.GONE);
         if (itemCount == position && (info.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_TV || info.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_WEIBO)) {
@@ -128,7 +131,8 @@ public class DialogCreateListAdapter extends RecyclerView.Adapter<DialogCreateLi
             holder.ll_normal.setVisibility(View.VISIBLE);
             holder.button_save.setVisibility(View.GONE);
         }
-        holder.title.setText(list.get(position).title);
+        String title = list.get(position).title;
+        holder.title.setText(title);
         int type = list.get(position).type;
         switch (type) {
             case CreateDialogItemInfo.CREATE_DIALOG_ITEM_TYPE_CHECKBOX:
@@ -148,7 +152,6 @@ public class DialogCreateListAdapter extends RecyclerView.Adapter<DialogCreateLi
                 break;
         }
         final Spinner spinner = holder.spinner;
-        String title = list.get(position).title;
         final ArrayList<String> data_list = new ArrayList<>();
         int defaultItemIndex = -1;
         ArrayAdapter<String> arr_adapter;
@@ -284,6 +287,7 @@ public class DialogCreateListAdapter extends RecyclerView.Adapter<DialogCreateLi
                         info.reporter = holder.edit.getText().toString().trim();
                     }
                 });
+                break;
             case "摄像员":
                 holder.edit.setText(info.camerist);
                 holder.edit.addTextChangedListener(new ListViewCompat(context) {

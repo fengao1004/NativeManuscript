@@ -38,14 +38,19 @@ public class AuditHistoryAdapter extends RecyclerView.Adapter<AuditHistoryHolder
         int index1 = 0;
         int count = 0;
         int index2 = 0;
+        boolean flag = false;
         for (int i = 0; i < list.size(); i++) {
             index1 = i;
             for (int j = 0; j < list.get(i).getCensorDetailOpition().size(); j++) {
                 index2 = j;
                 if (count == position) {
+                    flag = true;
                     break;
                 }
                 count++;
+            }
+            if (flag) {
+                break;
             }
         }
         CensorRecordInfo censorRecordInfo = list.get(index1);

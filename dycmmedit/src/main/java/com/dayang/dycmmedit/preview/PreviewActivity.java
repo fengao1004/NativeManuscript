@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,7 +28,7 @@ import java.util.List;
 
 
 public class PreviewActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
-    private RichEditor mTVNewsContent;
+    private WebView mTVNewsContent;
     private ManuscriptListInfo info;
     private ImageView ivImage;
     private CollapsingToolbarLayout collapsingToolbar1;
@@ -53,7 +54,7 @@ public class PreviewActivity extends AppCompatActivity implements AppBarLayout.O
                 finish();
             }
         });
-        mTVNewsContent = (RichEditor) findViewById(R.id.htNewsContent);
+        mTVNewsContent = (WebView) findViewById(R.id.htNewsContent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);//此FLAG可使状态栏透明，且当前视图在绘制时，从屏幕顶端开始即top = 0开始绘制，这也是实现沉浸效果的基础
             this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);//可不加
@@ -68,8 +69,9 @@ public class PreviewActivity extends AppCompatActivity implements AppBarLayout.O
         collapsingToolbar1.setTitle(info.header);
         collapsingToolbar1.setCollapsedTitleTextColor(Color.BLACK);//设置收缩后Toolbar上字体的颜
         collapsingToolbar1.setExpandedTitleColor(Color.TRANSPARENT);
-        mTVNewsContent.setHtml(info.h5content);
-        mTVNewsContent.setInputEnabled(false);
+        mTVNewsContent.loadDataWithBaseURL(null, info.h5content, "text/html", "utf-8", null);
+//        mTVNewsContent.loadUrl(info.h5content);
+//        mTVNewsContent.setInputEnabled(false);
         tv_title.setText(info.header);
         if (info.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_CMS || (info.manuscripttype == ManuscriptListInfo.MANUSCRIPT_TYPE_WECHAT && info.camerist.equals("1"))) {
             bar_layout.setVisibility(View.VISIBLE);

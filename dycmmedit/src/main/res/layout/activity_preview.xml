@@ -86,7 +86,7 @@
         android:paddingTop="27dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.dayang.richeditor.RichEditor
+        <WebView
             android:id="@+id/htNewsContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

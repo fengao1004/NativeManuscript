@@ -74,7 +74,8 @@ public class RedactModel {
             map2.put("username", PublicResource.getInstance().getUserName());
             map2.put("usercode", PublicResource.getInstance().getUserCode());
             map2.put("systemid", system.getTargetSystemIds());
-            return RetrofitHelper.getInstance(context).IsOutOfMemoryOfTVManuscript(map2)
+            return RetrofitHelper.getInstance(context)
+                    .IsOutOfMemoryOfTVManuscript(map2)
                     .flatMap(new Function<ResultCommonInfo, Observable<ResultCommonInfo>>() {
                         @Override
                         public Observable<ResultCommonInfo> apply(@NonNull ResultCommonInfo commonInfo) throws Exception {
